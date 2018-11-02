@@ -1,7 +1,10 @@
-import torch
-
-
-class DataSet(torch.utils.data.Dataset):
+class DataSet:
     def __init__(self):
-        super(dataSet, self).__init__()
+        super(DataSet, self).__init__()
+        raise NotImplementedError
+
+    def __len__(self):
+        raise NotImplementedError
+
+    def __getitem__(self, ind):
         raise NotImplementedError

@@ -1,7 +1,4 @@
-import torch
-
-
-class DataLoader(torch.utils.data.DataLoader):
+class DataLoader:
     def __init__(self):
-        super(dataLoader, self).__init__()
+        super(DataLoader, self).__init__()
         raise NotImplementedError
