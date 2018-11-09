@@ -1,9 +1,9 @@
 import torch
 
 
-class BaseModel:
+class BaseModel(torch.nn.Module):
     def __init__(self):
-        raise NotImplementedError
+        super(BaseModel, self).__init__()
 
     def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
         raise NotImplementedError

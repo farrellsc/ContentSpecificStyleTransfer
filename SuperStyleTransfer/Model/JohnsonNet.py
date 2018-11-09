@@ -7,8 +7,8 @@ from ..NetComponents.UpSamplingLayer import UpSamplingLayer
 
 class JohnsonNet(BaseModel):
     def __init__(self):
-        super(JohnsonNet, self).__init__()
         # Initial convolution layers
+        super(JohnsonNet, self).__init__()
         self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1)
         self.in1 = torch.nn.InstanceNorm2d(32, affine=True)
         self.conv2 = ConvLayer(32, 64, kernel_size=3, stride=2)
