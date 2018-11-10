@@ -8,7 +8,7 @@ class BaseModel:
         self.content_loss = None
         self.style_loss = None
 
-    def forward(self, x):
+    def forward(self):
         raise NotImplementedError
 
     def backward(self):
@@ -23,3 +23,8 @@ class BaseModel:
 
     def get_current_loss(self):
         return self.content_loss, self.style_loss
+    
+    def test(self):
+        with torch.no_grad():
+            self.forward()
+

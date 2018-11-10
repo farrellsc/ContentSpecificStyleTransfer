@@ -13,6 +13,7 @@ class JohnsonNet(BaseModel):
         # Initial convolution layers
         super(JohnsonNet, self).__init__()
         self.args = args
+        self.args.n_batch = 0
 
         self.TransformerNet = ResNet()
         self.optimizer_T = Adam(self.TransformerNet.parameters(), args.lr)
@@ -26,7 +27,7 @@ class JohnsonNet(BaseModel):
         style = utils.load_image(args.style_image, size=args.style_size)
         style = style_transform(style)
         self.style = style.repeat(args.batch_size, 1, 1, 1)
-        features_style = self.LossNet(utils.normalize_batch(style))
+        features_style = self.LossNet(utils.normalize_batch(self.style))
         self.gram_style = [utils.calc_gram_matrix(y) for y in features_style]
 
         self.x = None
@@ -35,12 +36,12 @@ class JohnsonNet(BaseModel):
         self.features_x = None
 
     @overrides
-    def forward(self, x):
-        y = self.TransformerNet(x)
-        self.y = utils.normalize_batch(y)
-        self.x = utils.normalize_batch(x)
-        self.features_y = self.LossNet(y)
-        self.features_x = self.LossNet(x)
+    def forward(self):
+        self.y = self.TransformerNet(self.x)
+        self.y = utils.normalize_batch(self.y)
+        self.x = utils.normalize_batch(self.x)
+        self.features_y = self.LossNet(self.y)
+        self.features_x = self.LossNet(self.x)
 
     @overrides
     def backward(self):
@@ -58,6 +59,7 @@ class JohnsonNet(BaseModel):
     @overrides
     def set_input(self, x):
         self.x = x
+        self.args.n_batch = len(x)
 
     @overrides
     def optimize_parameters(self):
