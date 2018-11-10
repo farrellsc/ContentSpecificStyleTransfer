@@ -49,13 +49,13 @@ def train(args):
             if args.checkpoint_model_dir is not None and (batch_id + 1) % args.checkpoint_interval == 0:
                 ckpt_model_filename = "ckpt_epoch_" + str(e) + "_batch_id_" + str(batch_id + 1) + ".pth"
                 ckpt_model_path = os.path.join(args.checkpoint_model_dir, ckpt_model_filename)
-                pickle.dump(JohnsonModel, open(ckpt_model_path, 'wb'))
+                torch.save(JohnsonModel, ckpt_model_path)
 
     # save model
     save_model_filename = "epoch_" + str(args.epochs) + "_" + str(time.ctime()).replace(' ', '_') + "_" + str(
         args.content_weight) + "_" + str(args.style_weight) + ".model"
     save_model_path = os.path.join(args.save_model_dir, save_model_filename)
-    pickle.dump(JohnsonModel, open(save_model_path, 'wb'))
+    torch.save(JohnsonModel, save_model_path)
 
     print("\nDone, trained model saved at", save_model_path)
 
