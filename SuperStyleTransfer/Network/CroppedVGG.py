@@ -45,6 +45,6 @@ class CroppedVGG(NetworkBase):
         h_relu3 = h
         h = self.slice4(h)
         h_relu4 = h
-        vgg_outputs = namedtuple("VggOutputs", ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
+        vgg_outputs = namedtuple("VggOutputs", ['relu1', 'relu2', 'relu3', 'relu4'])
         out = vgg_outputs(h_relu1, h_relu2, h_relu3, h_relu4)
         return out

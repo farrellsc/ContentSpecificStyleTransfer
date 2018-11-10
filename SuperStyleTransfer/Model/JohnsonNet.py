@@ -49,7 +49,7 @@ class JohnsonNet(BaseModel):
 
     @overrides
     def backward(self):
-        self.content_loss = self.args.content_weight * self.lossFunc(self.features_y.relu2_2, self.features_x.relu2_2)
+        self.content_loss = self.args.content_weight * self.lossFunc(self.features_y[self.args.vgg_relu_level], self.features_x[self.args.vgg_relu_level])
 
         self.style_loss = 0.
         for ft_y, gm_s in zip(self.features_y, self.gram_style):

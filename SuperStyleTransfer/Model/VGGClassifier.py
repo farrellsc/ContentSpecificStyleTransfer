@@ -4,6 +4,7 @@ from torch.optim import Adam
 from overrides import overrides
 from SuperStyleTransfer.Network.CroppedVGG import CroppedVGG
 from SuperStyleTransfer.Utils import Utils as utils
+from SuperStyleTransfer.Utils.DotDict import DotDict
 
 
 class VGGClassifier(BaseModel):
@@ -15,7 +16,7 @@ class VGGClassifier(BaseModel):
     From shallow to deep are relu1, relu2, relu3, relu3
     """
 
-    def __init__(self, args={}, requires_grad=False):
+    def __init__(self, args=DotDict({}), requires_grad=False):
         super(VGGClassifier, self).__init__()
         self.args = args
         self.ConvNet = CroppedVGG(requires_grad=False)
@@ -40,7 +41,7 @@ class VGGClassifier(BaseModel):
         :param x: batch input data
         :return: batch output at four different depth in network
         """
-        x = self.ConvNet(self.x)
+        x = self.ConvNet(self.x)[self.args.vgg_relu_level]
         x = x.view(x.size(0), -1)
         self.pred = self.Classifier(x)
 

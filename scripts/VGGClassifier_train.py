@@ -31,13 +31,15 @@ def train(args):
     # save model
     save_model_filename = "epoch_" + str(args.epochs) + "_" + str(time.ctime()).replace(' ', '_') + "vgg_classifier.model"
     save_model_path = os.path.join(args.save_model_dir, save_model_filename)
-    torch.save(vgg.Classifier.state_dict(), save_model_path)
+    vgg.save_model(save_model_path)
 
     print("\nDone, trained model saved at", save_model_path)
 
 
 if __name__ == '__main__':
     args = {
+        "num_classes": 3,
+        "vgg_relu_level": 1,
         "seed": 42,
         "image_size": 256,
         "batch_size": 4,
