@@ -13,9 +13,10 @@ class PretrainedVGG(NetworkBase):
     From shallow to deep are relu1, relu2, relu3, relu3
     """
 
-    def __init__(self, requires_grad=False):
+    def __init__(self, model_path, requires_grad=False):
         super(PretrainedVGG, self).__init__()
-        vgg_pretrained_features = models.vgg16(pretrained=True).features
+        # vgg_pretrained_features = models.vgg16(pretrained=True).features
+        vgg_pretrained_features = torch.load(model_path).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
@@ -32,7 +33,7 @@ class PretrainedVGG(NetworkBase):
             for param in self.parameters():
                 param.requires_grad = False
 
-    def forward(self, x: torch.FloatTensor) -> Dict(torch.FloatTensor):
+    def forward(self, x) -> dict:
         """
         :param x: batch input data
         :return: batch output at four different depth in network
