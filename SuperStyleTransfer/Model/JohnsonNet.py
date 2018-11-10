@@ -5,11 +5,12 @@ from ..Utils import Utils as utils
 from overrides import overrides
 from torch.optim import Adam
 from torchvision import transforms
+from SuperStyleTransfer.Utils.DotDict import DotDict
 import torch
 
 
 class JohnsonNet(BaseModel):
-    def __init__(self, args={}):
+    def __init__(self, args=DotDict({})):
         # Initial convolution layers
         super(JohnsonNet, self).__init__()
         self.args = args

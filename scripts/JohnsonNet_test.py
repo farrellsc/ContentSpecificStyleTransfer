@@ -28,7 +28,7 @@ if __name__ == '__main__':
     args = {
         "content_image": "/home/zz2590/SuperStyleTransfer/data/images/content-images/TrainingData/amber.jpg",
         "content_scale": None,
-        "model": "../models/JohnsonNet/candy.pth",
+        "model": "../models/JohnsonNet/epoch_2_Sat_Nov_10_18:39:38_2018_100000.0_10000000000.0.model",
         "output_image": "/home/zz2590/SuperStyleTransfer/output/JohnsonNet/test.jpg"
     }
     classify(DotDict(args))
