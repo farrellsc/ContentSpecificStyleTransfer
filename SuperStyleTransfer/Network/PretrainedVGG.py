@@ -1,4 +1,5 @@
 from .NetworkBase import NetworkBase
+from collections import namedtuple
 import torch
 from torchvision import models
 from typing import Dict
@@ -32,7 +33,7 @@ class PretrainedVGG(NetworkBase):
             for param in self.parameters():
                 param.requires_grad = False
 
-    def forward(self, x: torch.FloatTensor) -> Dict(torch.FloatTensor):
+    def forward(self, x) -> dict:
         """
         :param x: batch input data
         :return: batch output at four different depth in network
@@ -45,10 +46,6 @@ class PretrainedVGG(NetworkBase):
         h_relu3 = h
         h = self.slice4(h)
         h_relu4 = h
-        out = {
-            'relu1': h_relu1,
-            'relu2': h_relu2,
-            'relu3': h_relu3,
-            'relu4': h_relu4
-        }
+        vgg_outputs = namedtuple("VggOutputs", ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
+        out = vgg_outputs(h_relu1, h_relu2, h_relu3, h_relu4)
         return out

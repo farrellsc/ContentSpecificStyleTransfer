@@ -1,49 +1,78 @@
 from .BaseModel import BaseModel
+from ..Network.ResNet import ResNet
+from ..Network.PretrainedVGG import PretrainedVGG
+from ..Utils import Utils as utils
+from overrides import overrides
+from torch.optim import Adam
+from torchvision import transforms
 import torch
-from ..NetComponents.ConvLayer import ConvLayer
-from ..NetComponents.ResBlock import ResBlock
-from ..NetComponents.UpSamplingLayer import UpSamplingLayer
 
 
 class JohnsonNet(BaseModel):
-    def __init__(self):
-        super(JohnsonNet, self).__init__()
+    def __init__(self, args):
         # Initial convolution layers
-        self.conv1 = ConvLayer(3, 32, kernel_size=9, stride=1)
-        self.in1 = torch.nn.InstanceNorm2d(32, affine=True)
-        self.conv2 = ConvLayer(32, 64, kernel_size=3, stride=2)
-        self.in2 = torch.nn.InstanceNorm2d(64, affine=True)
-        self.conv3 = ConvLayer(64, 128, kernel_size=3, stride=2)
-        self.in3 = torch.nn.InstanceNorm2d(128, affine=True)
-        # Residual layers
-        self.res1 = ResBlock(128)
-        self.res2 = ResBlock(128)
-        self.res3 = ResBlock(128)
-        self.res4 = ResBlock(128)
-        self.res5 = ResBlock(128)
-        # Upsampling Layers
-        self.deconv1 = UpSamplingLayer(128, 64, kernel_size=3, stride=1, upsample=2)
-        self.in4 = torch.nn.InstanceNorm2d(64, affine=True)
-        self.deconv2 = UpSamplingLayer(64, 32, kernel_size=3, stride=1, upsample=2)
-        self.in5 = torch.nn.InstanceNorm2d(32, affine=True)
-        self.deconv3 = ConvLayer(32, 3, kernel_size=9, stride=1)
-        # Non-linearities
-        self.relu = torch.nn.ReLU()
+        super(JohnsonNet, self).__init__()
+        self.args = args
+        self.args.n_batch = 0
 
-    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
-        """
-        :param x: batch input data
-        :return: batch output data
-        """
-        y = self.relu(self.in1(self.conv1(x)))
-        y = self.relu(self.in2(self.conv2(y)))
-        y = self.relu(self.in3(self.conv3(y)))
-        y = self.res1(y)
-        y = self.res2(y)
-        y = self.res3(y)
-        y = self.res4(y)
-        y = self.res5(y)
-        y = self.relu(self.in4(self.deconv1(y)))
-        y = self.relu(self.in5(self.deconv2(y)))
-        y = self.deconv3(y)
-        return y
+        self.TransformerNet = ResNet()
+
+        self.x = None
+        self.y = None
+        self.features_y = None
+        self.features_x = None
+
+    @overrides
+    def initialize_model(self):
+        self.optimizer_T = Adam(self.TransformerNet.parameters(), self.args.lr)
+        self.lossFunc = torch.nn.MSELoss()
+
+        self.LossNet = PretrainedVGG(requires_grad=False)
+        style_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Lambda(lambda x: x.mul(255))
+        ])
+        style = utils.load_image(self.args.style_image, size=self.args.style_size)
+        style = style_transform(style)
+        self.style = style.repeat(self.args.batch_size, 1, 1, 1)
+        features_style = self.LossNet(utils.normalize_batch(self.style))
+        self.gram_style = [utils.calc_gram_matrix(y) for y in features_style]
+
+    @overrides
+    def forward(self):
+        self.y = self.TransformerNet(self.x)
+        self.y = utils.normalize_batch(self.y)
+        self.x = utils.normalize_batch(self.x)
+        self.features_y = self.LossNet(self.y)
+        self.features_x = self.LossNet(self.x)
+
+    @overrides
+    def backward(self):
+        self.content_loss = self.args.content_weight * self.lossFunc(self.features_y.relu2_2, self.features_x.relu2_2)
+
+        self.style_loss = 0.
+        for ft_y, gm_s in zip(self.features_y, self.gram_style):
+            gm_y = utils.calc_gram_matrix(ft_y)
+            self.style_loss += self.lossFunc(gm_y, gm_s[:self.args.n_batch, :, :])
+        self.style_loss *= self.args.style_weight
+
+        self.total_loss = self.content_loss + self.style_loss
+        self.total_loss.backward()
+
+    @overrides
+    def set_input(self, x):
+        self.x = x
+        self.args.n_batch = len(x)
+
+    @overrides
+    def optimize_parameters(self):
+        self.forward()
+        self.optimizer_T.zero_grad()
+        self.backward()
+        self.optimizer_T.step()
+
+    @overrides
+    def test(self):
+        with torch.no_grad():
+            return self.TransformerNet(self.x)
+

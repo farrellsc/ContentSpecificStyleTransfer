@@ -1,5 +1,6 @@
 from .BaseModel import BaseModel
 import itertools
+from overrides import overrides
 import torch
 from SuperStyleTransfer.NetComponents.GanLoss import GanLoss
 from SuperStyleTransfer.Data.DataLoader import DataLoader
@@ -27,9 +28,11 @@ class CycleGAN(BaseModel):
     def construct_discriminator(self):
         raise NotImplementedError
 
+    @overrides
     def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
         raise NotImplementedError
 
+    @overrides
     def backward(self):
         self.backward_discriminator()
         self.optimizer_generator.step()
