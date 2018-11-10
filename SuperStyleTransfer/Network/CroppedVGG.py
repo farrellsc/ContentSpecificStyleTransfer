@@ -38,13 +38,13 @@ class CroppedVGG(NetworkBase):
         :return: batch output at four different depth in network
         """
         h = self.slice1(x)
-        h_relu1 = h
+        h_relu0 = h
         h = self.slice2(h)
-        h_relu2 = h
+        h_relu1 = h
         h = self.slice3(h)
-        h_relu3 = h
+        h_relu2 = h
         h = self.slice4(h)
-        h_relu4 = h
-        vgg_outputs = namedtuple("VggOutputs", ['relu1', 'relu2', 'relu3', 'relu4'])
-        out = vgg_outputs(h_relu1, h_relu2, h_relu3, h_relu4)
+        h_relu3 = h
+        vgg_outputs = namedtuple("VggOutputs", ['relu0', 'relu1', 'relu2', 'relu3'])
+        out = vgg_outputs(h_relu0, h_relu1, h_relu2, h_relu3)
         return out

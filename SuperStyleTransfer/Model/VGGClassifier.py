@@ -51,7 +51,7 @@ class VGGClassifier(BaseModel):
         self.total_loss.backward()
 
     @overrides
-    def set_input(self, x, y):
+    def set_input(self, x, y=None):
         self.x = x
         self.y = y
 
