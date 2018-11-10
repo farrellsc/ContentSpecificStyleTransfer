@@ -2,10 +2,9 @@ from .NetworkBase import NetworkBase
 from collections import namedtuple
 import torch
 from torchvision import models
-from typing import Dict
 
 
-class PretrainedVGG(NetworkBase):
+class CroppedVGG(NetworkBase):
     """
     This should be a pretrained VGG16
     should use torchvision.models.vgg16(pretrained=True)
@@ -15,7 +14,7 @@ class PretrainedVGG(NetworkBase):
     """
 
     def __init__(self, requires_grad=False):
-        super(PretrainedVGG, self).__init__()
+        super(CroppedVGG, self).__init__()
         vgg_pretrained_features = models.vgg16(pretrained=True).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
@@ -33,19 +32,19 @@ class PretrainedVGG(NetworkBase):
             for param in self.parameters():
                 param.requires_grad = False
 
-    def forward(self, x) -> dict:
+    def forward(self, x):
         """
         :param x: batch input data
         :return: batch output at four different depth in network
         """
         h = self.slice1(x)
-        h_relu1 = h
+        h_relu0 = h
         h = self.slice2(h)
-        h_relu2 = h
+        h_relu1 = h
         h = self.slice3(h)
-        h_relu3 = h
+        h_relu2 = h
         h = self.slice4(h)
-        h_relu4 = h
-        vgg_outputs = namedtuple("VggOutputs", ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
-        out = vgg_outputs(h_relu1, h_relu2, h_relu3, h_relu4)
+        h_relu3 = h
+        vgg_outputs = namedtuple("VggOutputs", ['relu0', 'relu1', 'relu2', 'relu3'])
+        out = vgg_outputs(h_relu0, h_relu1, h_relu2, h_relu3)
         return out

@@ -7,8 +7,9 @@ from SuperStyleTransfer.Data.DataLoader import DataLoader
 
 
 class CycleGAN(BaseModel):
-    def __init__(self, dataloader: DataLoader, **kwargs):
+    def __init__(self, args):
         super(CycleGAN, self).__init__()
+        self.args = args
         self.G = self.construct_generator()
         self.F = self.construct_generator()
         self.Dx = self.construct_discriminator()
@@ -16,10 +17,6 @@ class CycleGAN(BaseModel):
         self.GanLoss = GanLoss()
         self.CycleLoss = torch.nn.L1Loss()
 
-        self.optimizer_generator = torch.optim.Adam(itertools.chain(self.G.parameters(), self.F.parameters()),
-                                            lr=opt.lr, betas=(opt.beta1, 0.999))
-        self.optimizer_discriminator = torch.optim.Adam(itertools.chain(self.Dx.parameters(), self.Dy.parameters()),
-                                            lr=opt.lr, betas=(opt.beta1, 0.999))
         raise NotImplementedError
 
     def construct_generator(self):
@@ -29,7 +26,15 @@ class CycleGAN(BaseModel):
         raise NotImplementedError
 
     @overrides
-    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
+    def initialize_model(self):
+        self.optimizer_generator = torch.optim.Adam(itertools.chain(self.G.parameters(), self.F.parameters()),
+                                            lr=self.args.lr, betas=(self.args.beta1, 0.999))
+        self.optimizer_discriminator = torch.optim.Adam(itertools.chain(self.Dx.parameters(), self.Dy.parameters()),
+                                            lr=self.args.lr, betas=(self.args.beta1, 0.999))
+        raise NotImplementedError
+
+    @overrides
+    def forward(self):
         raise NotImplementedError
 
     @overrides
@@ -43,4 +48,24 @@ class CycleGAN(BaseModel):
         raise NotImplementedError
 
     def backward_generator(self):
+        raise NotImplementedError
+
+    @overrides
+    def set_input(self, x):
+        raise NotImplementedError
+
+    @overrides
+    def optimize_parameters(self):
+        raise NotImplementedError
+
+    @overrides
+    def test(self):
+        raise NotImplementedError
+
+    @overrides
+    def save_model(self, path):
+        raise NotImplementedError
+
+    @overrides
+    def load_model(self, path):
         raise NotImplementedError

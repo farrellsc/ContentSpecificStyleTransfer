@@ -1,15 +1,16 @@
 from .BaseModel import BaseModel
 from ..Network.ResNet import ResNet
-from ..Network.PretrainedVGG import PretrainedVGG
+from ..Network.CroppedVGG import CroppedVGG
 from ..Utils import Utils as utils
 from overrides import overrides
 from torch.optim import Adam
 from torchvision import transforms
+from SuperStyleTransfer.Utils.DotDict import DotDict
 import torch
 
 
 class JohnsonNet(BaseModel):
-    def __init__(self, args):
+    def __init__(self, args=DotDict({})):
         # Initial convolution layers
         super(JohnsonNet, self).__init__()
         self.args = args
@@ -27,7 +28,7 @@ class JohnsonNet(BaseModel):
         self.optimizer_T = Adam(self.TransformerNet.parameters(), self.args.lr)
         self.lossFunc = torch.nn.MSELoss()
 
-        self.LossNet = PretrainedVGG(requires_grad=False)
+        self.LossNet = CroppedVGG(requires_grad=False)
         style_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Lambda(lambda x: x.mul(255))
@@ -48,7 +49,7 @@ class JohnsonNet(BaseModel):
 
     @overrides
     def backward(self):
-        self.content_loss = self.args.content_weight * self.lossFunc(self.features_y.relu2_2, self.features_x.relu2_2)
+        self.content_loss = self.args.content_weight * self.lossFunc(self.features_y[self.args.vgg_relu_level], self.features_x[self.args.vgg_relu_level])
 
         self.style_loss = 0.
         for ft_y, gm_s in zip(self.features_y, self.gram_style):
@@ -76,3 +77,13 @@ class JohnsonNet(BaseModel):
         with torch.no_grad():
             return self.TransformerNet(self.x)
 
+    @overrides
+    def save_model(self, path):
+        torch.save({
+            "TransformerNet": self.TransformerNet.state_dict()
+        }, path)
+
+    @overrides
+    def load_model(self, path):
+        checkpoint = torch.load(path)
+        self.TransformerNet.load_state_dict(checkpoint['TransformerNet'])

@@ -30,7 +30,7 @@ class ResNet(NetworkBase):
         # Non-linearities
         self.relu = torch.nn.ReLU()
 
-    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
+    def forward(self, x):
         """
         :param x: batch input data
         :return: batch output data
