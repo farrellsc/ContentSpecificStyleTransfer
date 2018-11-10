@@ -61,3 +61,11 @@ class CycleGAN(BaseModel):
     @overrides
     def test(self):
         raise NotImplementedError
+
+    @overrides
+    def save_model(self, path):
+        raise NotImplementedError
+
+    @overrides
+    def load_model(self, path):
+        raise NotImplementedError

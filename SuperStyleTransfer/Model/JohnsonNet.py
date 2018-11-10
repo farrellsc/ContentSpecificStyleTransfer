@@ -9,7 +9,7 @@ import torch
 
 
 class JohnsonNet(BaseModel):
-    def __init__(self, args):
+    def __init__(self, args={}):
         # Initial convolution layers
         super(JohnsonNet, self).__init__()
         self.args = args
@@ -76,3 +76,13 @@ class JohnsonNet(BaseModel):
         with torch.no_grad():
             return self.TransformerNet(self.x)
 
+    @overrides
+    def save_model(self, path):
+        torch.save({
+            "TransformerNet": self.TransformerNet.state_dict()
+        }, path)
+
+    @overrides
+    def load_model(self, path):
+        checkpoint = torch.load(path)
+        self.TransformerNet.load_state_dict(checkpoint['TransformerNet'])

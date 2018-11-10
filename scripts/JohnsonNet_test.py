@@ -2,6 +2,7 @@ import torch
 from SuperStyleTransfer.Utils.Utils import *
 from torchvision import transforms
 import SuperStyleTransfer.Utils.Utils as utils
+from SuperStyleTransfer.Model.JohnsonNet import JohnsonNet
 from SuperStyleTransfer.Utils.DotDict import DotDict
 import pickle
 
@@ -16,7 +17,8 @@ def classify(args):
     content_image = content_image.unsqueeze(0)
 
     with torch.no_grad():
-        style_model = pickle.load(open(args.model, 'rb'))
+        style_model = JohnsonNet()
+        style_model.load_model(args.model)
         style_model.set_input(content_image)
         output = style_model.test()
     utils.save_image(args.output_image, output[0])

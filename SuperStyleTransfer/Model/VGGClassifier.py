@@ -15,7 +15,7 @@ class VGGClassifier(BaseModel):
     From shallow to deep are relu1, relu2, relu3, relu3
     """
 
-    def __init__(self, args, requires_grad=False):
+    def __init__(self, args={}, requires_grad=False):
         super(VGGClassifier, self).__init__()
         self.args = args
         self.ConvNet = CroppedVGG(requires_grad=False)
@@ -66,3 +66,16 @@ class VGGClassifier(BaseModel):
         with torch.no_grad():
             self.forward()
             return self.pred
+
+    @overrides
+    def save_model(self, path):
+        torch.save({
+            "ConvNet": self.ConvNet.state_dict(),
+            "Classifier": self.Classifier.state_dict()
+        }, path)
+
+    @overrides
+    def load_model(self, path):
+        checkpoint = torch.load(path)
+        self.ConvNet.load_state_dict(checkpoint['ConvNet'])
+        self.Classifier.load_state_dict(checkpoint['Classifier'])
