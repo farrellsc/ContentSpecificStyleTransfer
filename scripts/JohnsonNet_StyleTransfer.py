@@ -30,9 +30,9 @@ def stylize(args):
 
 if __name__ == '__main__':
     args = {
-        "content_image": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/data/images/content-images/amber.jpg",
+        "content_image": "/home/zz2590/SuperStyleTransfer/data/images/content-images/amber.jpg",
         "content_scale": None,
-        "model": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/models/johnsonNet/candy.pth",
-        "output_image": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/output/johnsonNet/test.jpg"
+        "model": "/home/zz2590/SuperStyleTransfer/models/JohnsonNet/candy.pth",
+        "output_image": "/home/zz2590/SuperStyleTransfer/output/JohnsonNet/test.jpg"
     }
     stylize(DotDict(args))
