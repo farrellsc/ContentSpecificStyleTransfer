@@ -1,4 +1,5 @@
 from .NetworkBase import NetworkBase
+from collections import namedtuple
 import torch
 from torchvision import models
 from typing import Dict
@@ -45,10 +46,6 @@ class PretrainedVGG(NetworkBase):
         h_relu3 = h
         h = self.slice4(h)
         h_relu4 = h
-        out = {
-            'relu1': h_relu1,
-            'relu2': h_relu2,
-            'relu3': h_relu3,
-            'relu4': h_relu4
-        }
+        vgg_outputs = namedtuple("VggOutputs", ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
+        out = vgg_outputs(h_relu1, h_relu2, h_relu3, h_relu4)
         return out
