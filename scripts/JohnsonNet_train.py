@@ -29,7 +29,7 @@ def train(args):
     optimizer = Adam(transformer.parameters(), args.lr)
     mse_loss = torch.nn.MSELoss()
 
-    vgg = PretrainedVGG(args.pretrained_vgg_path, requires_grad=False)
+    vgg = PretrainedVGG(requires_grad=False)
     style_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255))
@@ -109,7 +109,6 @@ if __name__ == '__main__':
         "lr": 1e-3,
         "style_image": "images/style-images/mosaic.jpg",
         "style_size": None,
-        "pretrained_vgg_path": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/models/vgg16.t7",
         "epochs": 2,
         "content_weight": 1e5,
         "style_weight": 1e10,
