@@ -1,6 +1,6 @@
 from .BaseModel import BaseModel
 from ..Network.ResNet import ResNet
-from ..Network.PretrainedVGG import PretrainedVGG
+from ..Network.CroppedVGG import CroppedVGG
 from ..Utils import Utils as utils
 from overrides import overrides
 from torch.optim import Adam
@@ -27,7 +27,7 @@ class JohnsonNet(BaseModel):
         self.optimizer_T = Adam(self.TransformerNet.parameters(), self.args.lr)
         self.lossFunc = torch.nn.MSELoss()
 
-        self.LossNet = PretrainedVGG(requires_grad=False)
+        self.LossNet = CroppedVGG(requires_grad=False)
         style_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Lambda(lambda x: x.mul(255))
