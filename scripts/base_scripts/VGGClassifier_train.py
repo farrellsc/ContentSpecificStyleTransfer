@@ -45,7 +45,7 @@ if __name__ == '__main__':
         "batch_size": 4,
         "lr": 1e-3,
         "epochs": 2,
-        "dataset": "../data/images/content-images/",
-        "save_model_dir": "../models/JohnsonNet/"
+        "dataset": "../../data/images/content-images/",
+        "save_model_dir": "../../models/JohnsonNet/"
     }
     train(DotDict(args))
