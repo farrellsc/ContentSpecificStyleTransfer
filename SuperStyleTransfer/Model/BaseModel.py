@@ -8,6 +8,9 @@ class BaseModel:
         self.content_loss = None
         self.style_loss = None
 
+    def initialize_model(self):
+        raise NotImplementedError
+
     def forward(self):
         raise NotImplementedError
 
@@ -25,6 +28,5 @@ class BaseModel:
         return self.content_loss, self.style_loss
     
     def test(self):
-        with torch.no_grad():
-            self.forward()
+        raise NotImplementedError
 

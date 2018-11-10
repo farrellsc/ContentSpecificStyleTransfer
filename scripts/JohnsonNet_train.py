@@ -24,6 +24,7 @@ def train(args):
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size)
 
     JohnsonModel = JohnsonNet(args)
+    JohnsonModel.initialize_model()
 
     for e in range(args.epochs):
         agg_content_loss = 0.

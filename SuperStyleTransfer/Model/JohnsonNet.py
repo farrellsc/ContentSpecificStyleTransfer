@@ -16,6 +16,14 @@ class JohnsonNet(BaseModel):
         self.args.n_batch = 0
 
         self.TransformerNet = ResNet()
+
+        self.x = None
+        self.y = None
+        self.features_y = None
+        self.features_x = None
+
+    @overrides
+    def initialize_model(self):
         self.optimizer_T = Adam(self.TransformerNet.parameters(), args.lr)
         self.lossFunc = torch.nn.MSELoss()
 
@@ -29,11 +37,6 @@ class JohnsonNet(BaseModel):
         self.style = style.repeat(args.batch_size, 1, 1, 1)
         features_style = self.LossNet(utils.normalize_batch(self.style))
         self.gram_style = [utils.calc_gram_matrix(y) for y in features_style]
-
-        self.x = None
-        self.y = None
-        self.features_y = None
-        self.features_x = None
 
     @overrides
     def forward(self):
@@ -67,4 +70,9 @@ class JohnsonNet(BaseModel):
         self.optimizer_T.zero_grad()
         self.backward()
         self.optimizer_T.step()
+
+    @overrides
+    def test(self):
+        with torch.no_grad():
+            return self.TransformerNet(self.x)
 
