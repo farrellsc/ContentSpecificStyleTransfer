@@ -30,3 +30,8 @@ class BaseModel:
     def test(self):
         raise NotImplementedError
 
+    def save_model(self, path):
+        raise NotImplementedError
+
+    def load_model(self, path):
+        raise NotImplementedError
