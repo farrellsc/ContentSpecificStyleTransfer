@@ -2,10 +2,9 @@ from .NetworkBase import NetworkBase
 from collections import namedtuple
 import torch
 from torchvision import models
-from typing import Dict
 
 
-class PretrainedVGG(NetworkBase):
+class CroppedVGG(NetworkBase):
     """
     This should be a pretrained VGG16
     should use torchvision.models.vgg16(pretrained=True)
@@ -15,7 +14,7 @@ class PretrainedVGG(NetworkBase):
     """
 
     def __init__(self, requires_grad=False):
-        super(PretrainedVGG, self).__init__()
+        super(CroppedVGG, self).__init__()
         vgg_pretrained_features = models.vgg16(pretrained=True).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
@@ -33,7 +32,7 @@ class PretrainedVGG(NetworkBase):
             for param in self.parameters():
                 param.requires_grad = False
 
-    def forward(self, x) -> dict:
+    def forward(self, x):
         """
         :param x: batch input data
         :return: batch output at four different depth in network
