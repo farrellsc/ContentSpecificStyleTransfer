@@ -24,7 +24,7 @@ class JohnsonNet(BaseModel):
 
     @overrides
     def initialize_model(self):
-        self.optimizer_T = Adam(self.TransformerNet.parameters(), args.lr)
+        self.optimizer_T = Adam(self.TransformerNet.parameters(), self.args.lr)
         self.lossFunc = torch.nn.MSELoss()
 
         self.LossNet = PretrainedVGG(requires_grad=False)
@@ -32,9 +32,9 @@ class JohnsonNet(BaseModel):
             transforms.ToTensor(),
             transforms.Lambda(lambda x: x.mul(255))
         ])
-        style = utils.load_image(args.style_image, size=args.style_size)
+        style = utils.load_image(self.args.style_image, size=self.args.style_size)
         style = style_transform(style)
-        self.style = style.repeat(args.batch_size, 1, 1, 1)
+        self.style = style.repeat(self.args.batch_size, 1, 1, 1)
         features_style = self.LossNet(utils.normalize_batch(self.style))
         self.gram_style = [utils.calc_gram_matrix(y) for y in features_style]
 
