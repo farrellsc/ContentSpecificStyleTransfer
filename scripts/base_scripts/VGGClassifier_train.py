@@ -25,6 +25,7 @@ def train(args):
 
     for e in range(args.epochs):
         for batch_id, (x, y) in enumerate(train_loader):
+            y = y.type(torch.FloatTensor)
             vgg.set_input(x, y)
             vgg.optimize_parameters()
 
@@ -39,7 +40,6 @@ def train(args):
 if __name__ == '__main__':
     args = {
         "num_classes": 3,
-        "vgg_relu_level": 1,
         "seed": 42,
         "image_size": 256,
         "batch_size": 4,

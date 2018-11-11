@@ -21,7 +21,7 @@ class VGGClassifier(BaseModel):
         self.args = args
         self.ConvNet = CroppedVGG(requires_grad=False)
         self.Classifier = torch.nn.Sequential(
-            torch.nn.Linear(512 * 7 * 7, 4096),
+            torch.nn.Linear(524288, 4096),
             torch.nn.ReLU(True),
             torch.nn.Dropout(),
             torch.nn.Linear(4096, 4096),
@@ -41,7 +41,7 @@ class VGGClassifier(BaseModel):
         :param x: batch input data
         :return: batch output at four different depth in network
         """
-        x = self.ConvNet(self.x)[self.args.vgg_relu_level]
+        x = self.ConvNet(self.x)[3]
         x = x.view(x.size(0), -1)
         self.pred = self.Classifier(x)
 

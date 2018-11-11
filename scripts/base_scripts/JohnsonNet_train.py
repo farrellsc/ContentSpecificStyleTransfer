@@ -31,7 +31,7 @@ def train(args):
         agg_style_loss = 0.
         count = 0
         for batch_id, (x, _) in enumerate(train_loader):
-            JohnsonModel.set_input(x)
+            JohnsonModel.set_input(x.cuda())
             count += JohnsonModel.args.n_batch
             JohnsonModel.optimize_parameters()
 
@@ -78,4 +78,5 @@ if __name__ == '__main__':
         "dataset": "../../data/images/content-images/",
         "save_model_dir": "../../models/JohnsonNet/"
     }
-    train(DotDict(args))
+    with torch.cuda.device(0):
+        train(DotDict(args))

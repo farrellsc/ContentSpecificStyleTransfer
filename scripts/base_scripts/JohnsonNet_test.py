@@ -14,7 +14,7 @@ def classify(args):
         transforms.Lambda(lambda x: x.mul(255))
     ])
     content_image = content_transform(content_image)
-    content_image = content_image.unsqueeze(0)
+    content_image = content_image.unsqueeze(0).cuda()
 
     with torch.no_grad():
         style_model = JohnsonNet()
@@ -31,4 +31,5 @@ if __name__ == '__main__':
         "model": "../../models/JohnsonNet/epoch_2_Sat_Nov_10_18:39:38_2018_100000.0_10000000000.0.model",
         "output_image": "../../output/JohnsonNet/test.jpg"
     }
-    classify(DotDict(args))
+    with torch.cuda.device(0):
+        classify(DotDict(args))
