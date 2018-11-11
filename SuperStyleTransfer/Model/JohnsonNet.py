@@ -16,7 +16,7 @@ class JohnsonNet(BaseModel):
         self.args = args
         self.args.n_batch = 0
 
-        self.TransformerNet = ResNet()
+        self.TransformerNet = ResNet().cuda()
 
         self.x = None
         self.y = None
@@ -28,13 +28,13 @@ class JohnsonNet(BaseModel):
         self.optimizer_T = Adam(self.TransformerNet.parameters(), self.args.lr)
         self.lossFunc = torch.nn.MSELoss()
 
-        self.LossNet = CroppedVGG(requires_grad=False)
+        self.LossNet = CroppedVGG(requires_grad=False).cuda()
         style_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Lambda(lambda x: x.mul(255))
         ])
         style = utils.load_image(self.args.style_image, size=self.args.style_size)
-        style = style_transform(style)
+        style = style_transform(style).cuda()
         self.style = style.repeat(self.args.batch_size, 1, 1, 1)
         features_style = self.LossNet(utils.normalize_batch(self.style))
         self.gram_style = [utils.calc_gram_matrix(y) for y in features_style]

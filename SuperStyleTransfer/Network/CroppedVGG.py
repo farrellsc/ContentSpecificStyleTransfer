@@ -15,19 +15,19 @@ class CroppedVGG(NetworkBase):
 
     def __init__(self, requires_grad=False):
         super(CroppedVGG, self).__init__()
-        vgg_pretrained_features = models.vgg16(pretrained=True).features
-        self.slice1 = torch.nn.Sequential()
-        self.slice2 = torch.nn.Sequential()
-        self.slice3 = torch.nn.Sequential()
-        self.slice4 = torch.nn.Sequential()
+        vgg_pretrained_features = models.vgg16(pretrained=True).cuda().features
+        self.slice1 = torch.nn.Sequential().cuda()
+        self.slice2 = torch.nn.Sequential().cuda()
+        self.slice3 = torch.nn.Sequential().cuda()
+        self.slice4 = torch.nn.Sequential().cuda()
         for x in range(4):
-            self.slice1.add_module(str(x), vgg_pretrained_features[x])
+            self.slice1.add_module(str(x), vgg_pretrained_features[x].cuda())
         for x in range(4, 9):
-            self.slice2.add_module(str(x), vgg_pretrained_features[x])
+            self.slice2.add_module(str(x), vgg_pretrained_features[x].cuda())
         for x in range(9, 16):
-            self.slice3.add_module(str(x), vgg_pretrained_features[x])
+            self.slice3.add_module(str(x), vgg_pretrained_features[x].cuda())
         for x in range(16, 23):
-            self.slice4.add_module(str(x), vgg_pretrained_features[x])
+            self.slice4.add_module(str(x), vgg_pretrained_features[x].cuda())
         if not requires_grad:
             for param in self.parameters():
                 param.requires_grad = False

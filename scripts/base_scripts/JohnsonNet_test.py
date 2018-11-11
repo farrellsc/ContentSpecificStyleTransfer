@@ -21,14 +21,14 @@ def classify(args):
         style_model.load_model(args.model)
         style_model.set_input(content_image)
         output = style_model.test()
-    utils.save_image(args.output_image, output[0])
+    utils.save_image(args.output_image, output[0].cpu())
 
 
 if __name__ == '__main__':
     args = {
         "content_image": "../../data/images/content-images/TrainingData/amber.jpg",
         "content_scale": None,
-        "model": "../../models/JohnsonNet/epoch_2_Sat_Nov_10_18:39:38_2018_100000.0_10000000000.0.model",
+        "model": "../../models/JohnsonNet/epoch_10_Sun_Nov_11_22:38:42_2018_100000.0_10000000000.0.model",
         "output_image": "../../output/JohnsonNet/test.jpg"
     }
     with torch.cuda.device(0):
