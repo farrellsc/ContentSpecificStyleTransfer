@@ -27,7 +27,7 @@ class VGGClassifier(BaseModel):
             torch.nn.Linear(4096, 4096),
             torch.nn.ReLU(True),
             torch.nn.Dropout(),
-            torch.nn.Linear(4096, self.args.num_classes),
+            torch.nn.Linear(4096, 1),
         )
         self.optimizer = Adam(self.Classifier.parameters(), self.args.lr)
         self.lossFunc = torch.nn.MSELoss()
@@ -43,10 +43,11 @@ class VGGClassifier(BaseModel):
         """
         x = self.ConvNet(self.x)[3]
         x = x.view(x.size(0), -1)
-        self.pred = self.Classifier(x)
+        self.pred = self.Classifier(x).view([-1])
 
     @overrides
     def backward(self):
+        print(self.pred.shape, self.y.shape)
         self.total_loss = self.lossFunc(self.pred, self.y)
         self.total_loss.backward()
 
