@@ -66,15 +66,16 @@ if __name__ == '__main__':
         "image_size": 256,
         "batch_size": 4,
         "lr": 1e-3,
-        "style_image": "../data/images/style-images/mosaic.jpg",
+        "style_image": "../../data/images/style-images/mosaic.jpg",
         "style_size": None,
         "epochs": 2,
         "content_weight": 1e5,
         "style_weight": 1e10,
+        "vgg_relu_level": 1,   # 0/1/2/3
         "log_interval": 500,
         "checkpoint_model_dir": None,
         "checkpoint_interval": 2000,
-        "dataset": "../data/images/content-images/",
-        "save_model_dir": "../models/JohnsonNet/"
+        "dataset": "../../data/images/content-images/",
+        "save_model_dir": "../../models/JohnsonNet/"
     }
     train(DotDict(args))

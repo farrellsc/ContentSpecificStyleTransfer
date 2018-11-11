@@ -1,3 +1,7 @@
+"""
+TODO: To test
+"""
+
 from SuperStyleTransfer.Utils.Utils import *
 from torchvision import transforms
 from SuperStyleTransfer.Model.JohnsonNet import JohnsonNet
@@ -22,13 +26,13 @@ def main(args):
 
 if __name__ == '__main__':
     args = {
-        "content_folder": "/home/zz2590/SuperStyleTransfer/data/images/content-images/TestData/",
+        "content_folder": "../../data/images/content-images/TestData/",
         "content_scale": None,
-        "classifier": "../models/Classifier/hehe.pth",
+        "classifier": "../../models/Classifier/hehe.pth",
         "models": {
-            0: "../models/JohnsonNet/candy.pth",    # 0 for landscape
-            1: "../models/JohnsonNet/mosaic.pth"    # 1 for portrait
+            0: "../../models/JohnsonNet/candy.pth",    # 0 for landscape
+            1: "../../models/JohnsonNet/mosaic.pth"    # 1 for portrait
         },
-        "output_folder": "/home/zz2590/SuperStyleTransfer/output/JohnsonNet/Batch/"
+        "output_folder": "../../output/JohnsonNet/Batch/"
     }
     main(DotDict(args))
