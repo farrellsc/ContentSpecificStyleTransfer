@@ -22,7 +22,7 @@ def train(args):
     ])
     train_dataset = datasets.ImageFolder(args.dataset, transform)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size)
-
+    print("data loaded, data size:", len(train_dataset))
     JohnsonModel = JohnsonNet(args)
     JohnsonModel.initialize_model()
 
@@ -31,6 +31,7 @@ def train(args):
         agg_style_loss = 0.
         count = 0
         for batch_id, (x, _) in enumerate(train_loader):
+            print(e, batch_id, time.ctime())
             JohnsonModel.set_input(x.cuda())
             count += JohnsonModel.args.n_batch
             JohnsonModel.optimize_parameters()
@@ -64,18 +65,18 @@ if __name__ == '__main__':
     args = {
         "seed": 42,
         "image_size": 256,
-        "batch_size": 4,
+        "batch_size": 16,
         "lr": 1e-3,
         "style_image": "../../data/images/style-images/mosaic.jpg",
         "style_size": None,
-        "epochs": 2,
+        "epochs": 100,
         "content_weight": 1e5,
         "style_weight": 1e10,
         "vgg_relu_level": 1,   # 0/1/2/3
-        "log_interval": 500,
+        "log_interval": 10,
         "checkpoint_model_dir": None,
-        "checkpoint_interval": 2000,
-        "dataset": "../../data/images/content-images/",
+        "checkpoint_interval": 100,
+        "dataset": "../../data/trainingData/mileStoneData/",
         "save_model_dir": "../../models/JohnsonNet/"
     }
     with torch.cuda.device(0):
