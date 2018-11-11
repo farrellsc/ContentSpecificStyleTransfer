@@ -71,6 +71,7 @@ if __name__ == '__main__':
         "epochs": 2,
         "content_weight": 1e5,
         "style_weight": 1e10,
+        "vgg_relu_level": 1,   # 0/1/2/3
         "log_interval": 500,
         "checkpoint_model_dir": None,
         "checkpoint_interval": 2000,
