@@ -69,11 +69,11 @@ if __name__ == '__main__':
         vgg_relu_levels = ("1",)
         Datasets = ("city",)
     else:
-        style_images = ("mosaic",)
+        style_images = ("mosaic", "candy")
         content_weights = ("1e5",)
         style_weights = ("1e10",)
-        vgg_relu_levels = ("1",)
-        Datasets = ("city",)
+        vgg_relu_levels = ("0", "1", "2", "3")
+        Datasets = ("city", "mountain", "palace")
     for style_image in style_images:
         for content_weight in content_weights:
             for style_weight in style_weights:
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                             "lr": 1e-3,
                             "style_image": "../../data/images/style-images/" + style_image + ".jpg",
                             "style_size": None,
-                            "epochs": 10,
+                            "epochs": 1,
                             "content_weight": float(content_weight),
                             "style_weight": float(style_weight),
                             "vgg_relu_level": int(vgg_relu_level),   # 0/1/2/3

@@ -26,9 +26,9 @@ def classify(args):
 
 if __name__ == '__main__':
     args = {
-        "content_image": "../../data/trainingData/mileStoneData/city/00004654.jpg",
+        "content_image": "../../data/trainingData/city/city/00004654.jpg",
         "content_scale": None,
-        "model": "../../models/JohnsonNet/epoch_10_Sun_Nov_11_22:38:42_2018_100000.0_10000000000.0.model",
+        "model": "../../models/JohnsonNet/Mon_Nov_12_17:13:57_2018_mosaic_1e5_1e10_0_mountain.model",
         "output_image": "../../output/JohnsonNet/test2.jpg"
     }
     with torch.cuda.device(0):
