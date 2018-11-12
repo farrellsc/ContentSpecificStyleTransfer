@@ -53,8 +53,7 @@ def train(args):
                 JohnsonModel.save_model(ckpt_model_path)
 
     # save model
-    save_model_filename = "epoch_" + str(args.epochs) + "_" + str(time.ctime()).replace(' ', '_') + "_" + str(
-        args.content_weight) + "_" + str(args.style_weight) + ".model"
+    save_model_filename = str(time.ctime()).replace(' ', '_') + "_" + style_image + "_" + content_weight + "_" + style_weight + "_" + vgg_relu_level + "_" + dataset + ".model"
     save_model_path = os.path.join(args.save_model_dir, save_model_filename)
     JohnsonModel.save_model(save_model_path)
 
@@ -62,27 +61,40 @@ def train(args):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 6:
-        style_image, content_weight, style_weight, vgg_relu_level, dataset = ("mosaic", "1e5", "1e10", "1", "city")
+    default = False
+    if default:
+        style_images = ("mosaic",)
+        content_weights = ("1e5",)
+        style_weights = ("1e10",)
+        vgg_relu_levels = ("1",)
+        Datasets = ("city",)
     else:
-        style_image, content_weight, style_weight, vgg_relu_level, dataset = sys.argv[1:6]
-
-    args = {
-        "seed": 42,
-        "image_size": 256,
-        "batch_size": 16,
-        "lr": 1e-3,
-        "style_image": "../../data/images/style-images/" + style_image + ".jpg",
-        "style_size": None,
-        "epochs": 10,
-        "content_weight": float(content_weight),
-        "style_weight": float(style_weight),
-        "vgg_relu_level": int(vgg_relu_level),   # 0/1/2/3
-        "log_interval": 50,
-        "checkpoint_model_dir": None,
-        "checkpoint_interval": 200,
-        "dataset": "../../data/trainingData/" + dataset,
-        "save_model_dir": "../../models/JohnsonNet/"
-    }
-    with torch.cuda.device(0):
-        train(DotDict(args))
+        style_images = ("mosaic",)
+        content_weights = ("1e5",)
+        style_weights = ("1e10",)
+        vgg_relu_levels = ("1",)
+        Datasets = ("city",)
+    for style_image in style_images:
+        for content_weight in content_weights:
+            for style_weight in style_weights:
+                for vgg_relu_level in vgg_relu_levels:
+                    for dataset in Datasets:
+                        args = {
+                            "seed": 42,
+                            "image_size": 256,
+                            "batch_size": 16,
+                            "lr": 1e-3,
+                            "style_image": "../../data/images/style-images/" + style_image + ".jpg",
+                            "style_size": None,
+                            "epochs": 10,
+                            "content_weight": float(content_weight),
+                            "style_weight": float(style_weight),
+                            "vgg_relu_level": int(vgg_relu_level),   # 0/1/2/3
+                            "log_interval": 50,
+                            "checkpoint_model_dir": None,
+                            "checkpoint_interval": 200,
+                            "dataset": "../../data/trainingData/" + dataset,
+                            "save_model_dir": "../../models/JohnsonNet/"
+                        }
+                        with torch.cuda.device(0):
+                            train(DotDict(args))
