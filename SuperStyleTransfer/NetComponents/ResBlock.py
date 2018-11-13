@@ -4,24 +4,42 @@ from .ConvLayer import ConvLayer
 
 
 class ResBlock(nn.Module):
-    """
-    component in JohnsonNet
-    """
-    def __init__(self, channels):
+    def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         super(ResBlock, self).__init__()
-        self.conv1 = ConvLayer(channels, channels, kernel_size=3, stride=1)
-        self.in1 = torch.nn.InstanceNorm2d(channels, affine=True)
-        self.conv2 = ConvLayer(channels, channels, kernel_size=3, stride=1)
-        self.in2 = torch.nn.InstanceNorm2d(channels, affine=True)
-        self.relu = torch.nn.ReLU()
+        self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)
 
-    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
-        """
-        :param x: batch input data
-        :return: batch output data
-        """
-        residual = x
-        out = self.relu(self.in1(self.conv1(x)))
-        out = self.in2(self.conv2(out))
-        out = out + residual
+    def build_conv_block(self, dim, padding_type, norm_layer, use_dropout, use_bias):
+        conv_block = []
+        p = 0
+        if padding_type == 'reflect':
+            conv_block += [nn.ReflectionPad2d(1)]
+        elif padding_type == 'replicate':
+            conv_block += [nn.ReplicationPad2d(1)]
+        elif padding_type == 'zero':
+            p = 1
+        else:
+            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
+
+        conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
+                       norm_layer(dim),
+                       nn.ReLU(True)]
+        if use_dropout:
+            conv_block += [nn.Dropout(0.5)]
+
+        p = 0
+        if padding_type == 'reflect':
+            conv_block += [nn.ReflectionPad2d(1)]
+        elif padding_type == 'replicate':
+            conv_block += [nn.ReplicationPad2d(1)]
+        elif padding_type == 'zero':
+            p = 1
+        else:
+            raise NotImplementedError('padding [%s] is not implemented' % padding_type)
+        conv_block += [nn.Conv2d(dim, dim, kernel_size=3, padding=p, bias=use_bias),
+                       norm_layer(dim)]
+
+        return nn.Sequential(*conv_block)
+
+    def forward(self, x):
+        out = x + self.conv_block(x)
         return out

@@ -13,7 +13,7 @@ class UpSamplingLayer(nn.Module):
         self.reflection_pad = torch.nn.ReflectionPad2d(reflection_padding)
         self.conv2d = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride)
 
-    def forward(self, x: torch.FloatTensor) -> torch.FloatTensor:
+    def forward(self, x):
         """
         :param x: batch input data
         :return: batch output data
