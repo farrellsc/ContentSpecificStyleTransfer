@@ -25,11 +25,30 @@ def classify(args):
 
 
 if __name__ == '__main__':
-    args = {
-        "content_image": "../../data/trainingData/city/city/00004654.jpg",
-        "content_scale": None,
-        "model": "../../models/JohnsonNet/Mon_Nov_12_17:13:57_2018_mosaic_1e5_1e10_0_mountain.model",
-        "output_image": "../../output/JohnsonNet/test2.jpg"
-    }
-    with torch.cuda.device(0):
-        classify(DotDict(args))
+    groups = ("city", "mountain")
+    models = ("Tue_Nov_13_07:30:48_2018_udnie_1e5_1e10_1_city.model",
+              "Tue_Nov_13_08:00:32_2018_udnie_1e5_1e10_1_mountain.model",
+              "Tue_Nov_13_08:30:13_2018_udnie_1e5_1e10_2_city.model",
+              "Tue_Nov_13_08:59:53_2018_udnie_1e5_1e10_2_mountain.model",
+              "Tue_Nov_13_09:29:32_2018_udnie_1e5_1e10_3_city.model",
+              "Tue_Nov_13_09:59:11_2018_udnie_1e5_1e10_3_mountain.model",
+              "Tue_Nov_13_10:29:01_2018_rain-princess-cropped_1e5_1e10_0_city.model",
+              "Tue_Nov_13_10:58:50_2018_rain-princess-cropped_1e5_1e10_0_mountain.model",
+              "Tue_Nov_13_11:28:35_2018_rain-princess-cropped_1e5_1e10_1_city.model",
+              "Tue_Nov_13_11:58:18_2018_rain-princess-cropped_1e5_1e10_1_mountain.model",
+              "Tue_Nov_13_12:28:00_2018_rain-princess-cropped_1e5_1e10_2_city.model",
+              "Tue_Nov_13_12:57:40_2018_rain-princess-cropped_1e5_1e10_2_mountain.model",
+              "Tue_Nov_13_13:27:20_2018_rain-princess-cropped_1e5_1e10_3_city.model",
+              "Tue_Nov_13_13:56:59_2018_rain-princess-cropped_1e5_1e10_3_mountain.model")
+
+    for group in groups:
+        for model in models:
+            for i in range(1, 501):
+                args = {
+                    "content_image": "../../data/trainingData/" + group + "/" + group + "/%08d.jpg" % i,
+                    "content_scale": None,
+                    "model": "../../models/JohnsonNet/" + model,
+                    "output_image": "../../output/JohnsonNet/" + group + "/%08d.jpg" % i
+                }
+                with torch.cuda.device(0):
+                    classify(DotDict(args))
