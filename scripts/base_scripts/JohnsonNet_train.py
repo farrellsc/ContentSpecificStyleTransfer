@@ -23,6 +23,7 @@ def train(args):
     train_dataset = datasets.ImageFolder(args.dataset, transform)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size)
     print("data loaded, data size:", len(train_dataset))
+
     JohnsonModel = JohnsonNet(args)
     JohnsonModel.initialize_model()
 

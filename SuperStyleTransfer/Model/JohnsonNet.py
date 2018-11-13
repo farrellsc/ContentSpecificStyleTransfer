@@ -17,6 +17,9 @@ class JohnsonNet(BaseModel):
         self.args.n_batch = 0
 
         self.TransformerNet = ResNet().cuda()
+        self.total_loss = None
+        self.content_loss = None
+        self.style_loss = None
 
         self.x = None
         self.y = None
@@ -76,6 +79,10 @@ class JohnsonNet(BaseModel):
     def test(self):
         with torch.no_grad():
             return self.TransformerNet(self.x)
+
+    @overrides
+    def get_current_loss(self):
+        return self.content_loss, self.style_loss
 
     @overrides
     def save_model(self, path):
