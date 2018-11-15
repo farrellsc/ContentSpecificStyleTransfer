@@ -5,6 +5,7 @@ import SuperStyleTransfer.Utils.Utils as utils
 from SuperStyleTransfer.Model.JohnsonNet import JohnsonNet
 from SuperStyleTransfer.Utils.DotDict import DotDict
 import pickle
+import os
 
 
 def classify(args):
@@ -62,14 +63,16 @@ if __name__ == '__main__':
     for group in groups:
         for model in models:
             for i in range(1, 501):
-                path = "../../output/JohnsonNet/" + group + "/" + model + "/"
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                args = {
-                    "content_image": "../../data/trainingData/" + group + "/" + group + "/%08d.jpg" % i,
-                    "content_scale": None,
-                    "model": "../../models/JohnsonNet/" + model + ".model",
-                    "output_image": path + "%08d.jpg" % i
-                }
-                with torch.cuda.device(0):
-                    classify(DotDict(args))
+                outputdir = "../../output/JohnsonNet/" + group + "/" + model + "/"
+                contentdir = "../../data/trainingData/" + group + "/" + group + "/"
+                if not os.path.exists(outputdir):
+                    os.makedirs(outputdir)
+                for image in os.listdir(contentdir):
+                    args = {
+                        "content_image": contentdir + image,
+                        "content_scale": None,
+                        "model": "../../models/JohnsonNet/" + model + ".model",
+                        "output_image": outputdir + image
+                    }
+                    with torch.cuda.device(0):
+                        classify(DotDict(args))
