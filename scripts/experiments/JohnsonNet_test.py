@@ -62,11 +62,14 @@ if __name__ == '__main__':
     for group in groups:
         for model in models:
             for i in range(1, 501):
+                path = "../../output/JohnsonNet/" + group + "/" + model + "/"
+                if not os.path.exists(path):
+                    os.makedirs(path)
                 args = {
                     "content_image": "../../data/trainingData/" + group + "/" + group + "/%08d.jpg" % i,
                     "content_scale": None,
                     "model": "../../models/JohnsonNet/" + model + ".model",
-                    "output_image": "../../output/JohnsonNet/" + group + "/" + model + "/%08d.jpg" % i
+                    "output_image": path + "%08d.jpg" % i
                 }
                 with torch.cuda.device(0):
                     classify(DotDict(args))
