@@ -26,11 +26,11 @@ def classify(args):
 
 
 if __name__ == '__main__':
-    groups = ("city",)
-    models = ("Thu_Nov_15_16:54:14_2018_night_1e5_1e10_0_city",
-              "Thu_Nov_15_17:23:52_2018_night_1e5_1e10_1_city",
-              "Thu_Nov_15_17:53:27_2018_night_1e5_1e10_2_city",
-              "Thu_Nov_15_18:23:01_2018_night_1e5_1e10_3_city")
+    groups = ("portrait",)
+    models = ("Thu_Nov_15_21:00:09_2018_portrait_1e5_1e10_0_portrait",
+              "Thu_Nov_15_21:29:48_2018_portrait_1e5_1e10_1_portrait",
+              "Thu_Nov_15_21:59:23_2018_portrait_1e5_1e10_2_portrait",
+              "Thu_Nov_15_22:28:57_2018_portrait_1e5_1e10_3_portrait")
 
     for group in groups:
         for model in models:
