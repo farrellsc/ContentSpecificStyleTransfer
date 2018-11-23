@@ -14,6 +14,7 @@ class CycleGAN(BaseModel):
     def __init__(self, args):
         super(CycleGAN, self).__init__()
         self.args = args
+        self.args.n_batch = 0
         self.G = self.construct_generator(self.args.in_channel_num, self.args.out_channel_num,
                                           self.args.channel_base_num, self.args.netG_type)
         self.F = self.construct_generator(self.args.in_channel_num, self.args.out_channel_num,
@@ -130,6 +131,7 @@ class CycleGAN(BaseModel):
 
     @overrides
     def set_input(self, A, B):
+        self.args.n_batch = len(A)
         AtoB = self.args.direction == 'AtoB'
         self.real_A = A if AtoB else B
         self.real_B = B if AtoB else A
