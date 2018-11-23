@@ -86,8 +86,8 @@ if __name__ == '__main__':
         "log_interval": 50,
         "checkpoint_model_dir": None,
         "checkpoint_interval": 200,
-        "dataset": "../../data/trainingData/mileStoneData/",
-        "styleset": "../../data/trainingData/mileStoneData/",
+        "dataset": "../../data/images/content-images/",
+        "styleset": "../../data/images/style-images2/",
         "save_model_dir": "../../models/CycleGan/",
 
         "in_channel_num": 3,
