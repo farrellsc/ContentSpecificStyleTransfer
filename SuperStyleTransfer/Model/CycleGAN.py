@@ -105,11 +105,9 @@ class CycleGAN(BaseModel):
 
     def backward_discriminator_base(self, netD, real, fake):
         # Real
-        pred_real = netD(real)
-        loss_D_real = self.AdvLoss(pred_real, True)
+        loss_D_real = self.AdvLoss(netD(real), True)
         # Fake
-        pred_fake = netD(fake.detach())
-        loss_D_fake = self.AdvLoss(pred_fake, False)
+        loss_D_fake = self.AdvLoss(netD(fake.detach()), False)
         # Combined loss
         loss_D = (loss_D_real + loss_D_fake) * 0.5
         # backward
