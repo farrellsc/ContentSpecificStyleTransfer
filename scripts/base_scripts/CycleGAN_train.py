@@ -42,7 +42,7 @@ def train(args):
         agg_loss_F = 0.
         count = 0
         for batch_id, (A, B) in enumerate(train_loader):
-            CycleGanModel.set_input(A, B)
+            CycleGanModel.set_input(A.cuda(), B.cuda())
             count += CycleGanModel.args.n_batch
             CycleGanModel.optimize_parameters()
 
