@@ -1,21 +1,21 @@
 from SuperStyleTransfer.Utils.BaseTestCase import BaseTestCase
-from SuperStyleTransfer.Data.UnalignedDataSet import UnalignedDataset
 from SuperStyleTransfer.Utils.DotDict import DotDict
 from torchvision import transforms
 from torchvision import datasets
 from torch.utils.data import DataLoader
+from SuperStyleTransfer.Data.UnalignedDataSet import UnalignedDataset
 
 
-class TestDataLoader(BaseTestCase):
+class TestImagePool(BaseTestCase):
     def setUp(self):
         self.args = DotDict({
             "image_size": 256,
             "batch_size": 1,
             "dataset": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/data/images/content-images",
-            "styleset": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/data/images/style-images/",
+            "styleset": "/media/zzhuang/00091EA2000FB1D0/iGit/git_projects/SuperStyleTransfer/data/images/style-images/"
         })
 
-    def test_dataloader(self):
+    def test_image_pool(self):
         transform = transforms.Compose([
             transforms.Resize(self.args.image_size),
             transforms.CenterCrop(self.args.image_size),

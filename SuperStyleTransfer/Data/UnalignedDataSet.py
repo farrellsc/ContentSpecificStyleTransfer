@@ -14,14 +14,14 @@ class UnalignedDataset(DataLoader):
         self.A_size = len(content_dataset)
         self.B_size = len(style_dataset)
 
-    def __getitem__(self, index) -> (A, B):
-        A = self.content_dataset[index % self.A_size]
+    def __getitem__(self, index):
+        A = self.content_dataset[index % self.A_size][0]
         index_B = random.randint(0, self.B_size - 1)
-        B = self.style_dataset[index_B]
+        B = self.style_dataset[index_B][0]
         return A, B
 
     def __len__(self):
-        return self.A_size, self.B_size
+        return self.A_size
 
     def name(self):
         return 'UnalignedDataset'

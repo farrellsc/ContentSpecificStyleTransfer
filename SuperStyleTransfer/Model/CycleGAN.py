@@ -6,16 +6,17 @@ from SuperStyleTransfer.NetComponents.GanLoss import GanLoss
 from SuperStyleTransfer.Utils.ImagePool import ImagePool
 from SuperStyleTransfer.Network.ResnetGenerator import ResnetGenerator
 from SuperStyleTransfer.Network.PixelDiscriminator import PixelDiscriminator
+from SuperStyleTransfer.Network.PatchGAN import PatchGAN
 
 
 class CycleGAN(BaseModel):
     def __init__(self, args):
         super(CycleGAN, self).__init__()
         self.args = args
-        self.G = self.construct_generator(self.args.input_nc, self.args.output_nc, self.args.ngf, self.args.netG,
-                                          not self.args.no_dropout, self.args.init_type, self.args.init_gain)
-        self.F = self.construct_generator(self.args.input_nc, self.args.output_nc, self.args.ngf, self.args.netG,
-                                          not self.args.no_dropout, self.args.init_type, self.args.init_gain)
+        self.G = self.construct_generator(self.args.input_nc, self.args.output_nc, self.args.channel_base_num,
+                                          self.args.netG_type, not self.args.no_dropout, self.args.init_type, self.args.init_gain)
+        self.F = self.construct_generator(self.args.input_nc, self.args.output_nc, self.args.channel_base_num,
+                                          self.args.netG_type, not self.args.no_dropout, self.args.init_type, self.args.init_gain)
         self.Dx = None
         self.Dy = None
 
@@ -55,34 +56,30 @@ class CycleGAN(BaseModel):
         #     raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
         return net
 
-    def construct_discriminator(self, input_nc, ndf, netD, n_layers_D=3, use_sigmoid=False, init_type='normal', init_gain=0.02):
+    def construct_discriminator(self, in_channel_num, channel_base_num, net_type, layer_num=3):
         net = None
-        # if netD == 'basic':
-        #     net = NLayerDiscriminator(input_nc, ndf, n_layers=3, use_sigmoid=use_sigmoid)
-        # elif netD == 'n_layers':
-        #     net = NLayerDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid)
-        # elif netD == 'pixel':
-        net = PixelDiscriminator(input_nc, ndf, use_sigmoid=use_sigmoid).cuda()
-        # else:
-        #     raise NotImplementedError('Discriminator model name [%s] is not recognized' % net)
+        if net_type == 'patchGan':
+            net = PatchGAN(in_channel_num, channel_base_num=channel_base_num, layer_num=layer_num).cuda()
+        elif net_type == 'pixel':
+            net = PixelDiscriminator(in_channel_num, channel_base_num=channel_base_num).cuda()
+        else:
+            raise NotImplementedError('Discriminator model name [%s] is not recognized' % net)
         return net
 
     @overrides
     def initialize_model(self):
         self.optimizer_generator = torch.optim.Adam(itertools.chain(self.G.parameters(), self.F.parameters()),
-                                            lr=self.args.lr, betas=(self.args.beta1, 0.999))
+                                                    lr=self.args.lr, betas=(self.args.beta1, 0.999))
         self.optimizer_discriminator = torch.optim.Adam(itertools.chain(self.Dx.parameters(), self.Dy.parameters()),
-                                            lr=self.args.lr, betas=(self.args.beta1, 0.999))
+                                                        lr=self.args.lr, betas=(self.args.beta1, 0.999))
         self.optimizers.append(self.optimizer_generator)
         self.optimizers.append(self.optimizer_discriminator)
 
         # load/define networks
-        self.Dx = self.construct_discriminator(self.args.input_nc + self.args.output_nc, self.args.ndf, self.args.netD,
-                                               self.args.n_layers_D, self.args.no_lsgan, self.args.init_type,
-                                               self.args.init_gain).cuda()
-        self.Dy = self.construct_discriminator(self.args.input_nc + self.args.output_nc, self.args.ndf, self.args.netD,
-                                               self.args.n_layers_D, self.args.no_lsgan, self.args.init_type,
-                                               self.args.init_gain).cuda()
+        self.Dx = self.construct_discriminator(self.args.input_nc + self.args.output_nc, self.args.channel_base_num,
+                                               self.args.netD_type, self.args.layer_num).cuda()
+        self.Dy = self.construct_discriminator(self.args.input_nc + self.args.output_nc, self.args.channel_base_num,
+                                               self.args.netD_type, self.args.layer_num).cuda()
 
         self.fake_A_pool = ImagePool(self.args.pool_size)
         self.fake_B_pool = ImagePool(self.args.pool_size)
@@ -108,11 +105,9 @@ class CycleGAN(BaseModel):
 
     def backward_discriminator_base(self, netD, real, fake):
         # Real
-        pred_real = netD(real)
-        loss_D_real = self.AdvLoss(pred_real, True)
+        loss_D_real = self.AdvLoss(netD(real), True)
         # Fake
-        pred_fake = netD(fake.detach())
-        loss_D_fake = self.AdvLoss(pred_fake, False)
+        loss_D_fake = self.AdvLoss(netD(fake.detach()), False)
         # Combined loss
         loss_D = (loss_D_real + loss_D_fake) * 0.5
         # backward
