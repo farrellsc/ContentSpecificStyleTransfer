@@ -1,3 +1,4 @@
+from SuperStyleTransfer.Network.UnetGenerator import UnetGenerator
 from .BaseModel import BaseModel
 import itertools
 from overrides import overrides
@@ -44,16 +45,16 @@ class CycleGAN(BaseModel):
         self.rec_B = None
 
     def construct_generator(self, input_nc, output_nc, ngf, netG, use_dropout=False, init_type='normal', init_gain=0.02):
-        # if netG == 'resnet_9blocks':
-        net = ResnetGenerator(input_nc, output_nc, ngf, use_dropout=use_dropout, n_blocks=9).cuda()
-        # elif netG == 'resnet_6blocks':
-        #     net = ResnetGenerator(input_nc, output_nc, ngf, use_dropout=use_dropout, n_blocks=6)
-        # elif netG == 'unet_128':
-        #     net = UnetGenerator(input_nc, output_nc, 7, ngf, use_dropout=use_dropout)
-        # elif netG == 'unet_256':
-        #     net = UnetGenerator(input_nc, output_nc, 8, ngf, use_dropout=use_dropout)
-        # else:
-        #     raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
+        if netG == 'resnet_9blocks':
+            net = ResnetGenerator(input_nc, output_nc, ngf, use_dropout=use_dropout, n_blocks=9).cuda()
+        elif netG == 'resnet_6blocks':
+             net = ResnetGenerator(input_nc, output_nc, ngf, use_dropout=use_dropout, n_blocks=6).cuda()
+        elif netG == 'unet_128':
+             net = UnetGenerator(input_nc, output_nc, 7, ngf, use_dropout=use_dropout)
+        elif netG == 'unet_256':
+             net = UnetGenerator(input_nc, output_nc, 8, ngf, use_dropout=use_dropout)
+        else:
+             raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
         return net
 
     def construct_discriminator(self, in_channel_num, channel_base_num, net_type, layer_num=3):
