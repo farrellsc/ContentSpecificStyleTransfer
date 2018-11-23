@@ -14,10 +14,10 @@ class CycleGAN(BaseModel):
     def __init__(self, args):
         super(CycleGAN, self).__init__()
         self.args = args
-        self.G = self.construct_generator(self.args.input_nc, self.args.output_nc, self.args.channel_base_num,
-                                          self.args.netG_type, not self.args.no_dropout, self.args.init_type, self.args.init_gain)
-        self.F = self.construct_generator(self.args.input_nc, self.args.output_nc, self.args.channel_base_num,
-                                          self.args.netG_type, not self.args.no_dropout, self.args.init_type, self.args.init_gain)
+        self.G = self.construct_generator(self.args.in_channel_num, self.args.out_channel_num,
+                                          self.args.channel_base_num, self.args.netG_type)
+        self.F = self.construct_generator(self.args.in_channel_num, self.args.out_channel_num,
+                                          self.args.channel_base_num, self.args.netG_type)
         self.Dx = None
         self.Dy = None
 
@@ -44,17 +44,17 @@ class CycleGAN(BaseModel):
         self.rec_A = None
         self.rec_B = None
 
-    def construct_generator(self, input_nc, output_nc, ngf, netG, use_dropout=False, init_type='normal', init_gain=0.02):
-        if netG == 'resnet_9blocks':
-            net = ResnetGenerator(input_nc, output_nc, ngf, use_dropout=use_dropout, n_blocks=9).cuda()
-        elif netG == 'resnet_6blocks':
-             net = ResnetGenerator(input_nc, output_nc, ngf, use_dropout=use_dropout, n_blocks=6).cuda()
-        elif netG == 'unet_128':
-             net = UnetGenerator(input_nc, output_nc, 7, ngf, use_dropout=use_dropout)
-        elif netG == 'unet_256':
-             net = UnetGenerator(input_nc, output_nc, 8, ngf, use_dropout=use_dropout)
+    def construct_generator(self, in_channel_num, out_channel_num, channel_base_num, net_type):
+        if net_type == 'resnet_9blocks':
+            net = ResnetGenerator(in_channel_num, out_channel_num, channel_base_num, n_blocks=9).cuda()
+        elif net_type == 'resnet_6blocks':
+             net = ResnetGenerator(in_channel_num, out_channel_num, channel_base_num, n_blocks=6).cuda()
+        elif net_type == 'unet_128':
+             net = UnetGenerator(in_channel_num, out_channel_num, 7, channel_base_num).cuda()
+        elif net_type == 'unet_256':
+             net = UnetGenerator(in_channel_num, out_channel_num, 8, channel_base_num).cuda()
         else:
-             raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
+             raise NotImplementedError('Generator model name [%s] is not recognized' % net_type)
         return net
 
     def construct_discriminator(self, in_channel_num, channel_base_num, net_type, layer_num=3):
@@ -77,10 +77,10 @@ class CycleGAN(BaseModel):
         self.optimizers.append(self.optimizer_discriminator)
 
         # load/define networks
-        self.Dx = self.construct_discriminator(self.args.input_nc + self.args.output_nc, self.args.channel_base_num,
-                                               self.args.netD_type, self.args.layer_num).cuda()
-        self.Dy = self.construct_discriminator(self.args.input_nc + self.args.output_nc, self.args.channel_base_num,
-                                               self.args.netD_type, self.args.layer_num).cuda()
+        self.Dx = self.construct_discriminator(self.args.in_channel_num + self.args.out_channel_num, self.args.channel_base_num,
+                                               self.args.netD_type, self.args.netD_layer_num).cuda()
+        self.Dy = self.construct_discriminator(self.args.in_channel_num + self.args.out_channel_num, self.args.channel_base_num,
+                                               self.args.netD_type, self.args.netD_layer_num).cuda()
 
         self.fake_A_pool = ImagePool(self.args.pool_size)
         self.fake_B_pool = ImagePool(self.args.pool_size)

@@ -82,28 +82,25 @@ if __name__ == '__main__':
         "seed": 42,
         "image_size": 256,
         "batch_size": 16,
-        "epochs": 10,
+        "epochs": 1,
         "log_interval": 50,
         "checkpoint_model_dir": None,
         "checkpoint_interval": 200,
         "dataset": "../../data/trainingData/mileStoneData/",
         "styleset": "../../data/trainingData/mileStoneData/",
-        "save_model_dir": "../../models/JohnsonNet/",
+        "save_model_dir": "../../models/CycleGan/",
 
-        "input_nc": 1,
-        "output_nc": 1,
-        "channel_base_num": 1,
-        "netG_type": 1,
-        "no_dropout": 1,
-        "init_type": 1,
-        "init_gain": 1,
-        "lr": 1e-3,
-        "betal": 1,
-        "no_lsgan": 1,
-        "layer_num": 1,
-        "pool_size": 1,
-        "lambda_A": 1,
-        "lambda_B": 1,
-        "direction": 1
+        "in_channel_num": 3,
+        "out_channel_num": 3,
+        "channel_base_num": 64,
+        "netG_type": 'resnet_6blocks',                 # 'resnet_9blocks' / 'resnet_6blocks' / 'unet_128' / 'unet_256'
+        "netD_type": 'pixel',                 # 'patchGan' / 'pixel'
+        "lr": 0.0002,
+        "beta1": 0.5,
+        "netD_layer_num": 3,
+        "pool_size": 50,
+        "lambda_A": 10,
+        "lambda_B": 10,
+        "direction": 'AtoB'             # 'AtoB' / 'BtoA'
     }
     train(DotDict(args))
