@@ -69,6 +69,10 @@ class CycleGAN(BaseModel):
 
     @overrides
     def initialize_model(self):
+        self.Dx = self.construct_discriminator(self.args.in_channel_num + self.args.out_channel_num, self.args.channel_base_num,
+                                               self.args.netD_type, self.args.netD_layer_num).cuda()
+        self.Dy = self.construct_discriminator(self.args.in_channel_num + self.args.out_channel_num, self.args.channel_base_num,
+                                               self.args.netD_type, self.args.netD_layer_num).cuda()
         self.optimizer_generator = torch.optim.Adam(itertools.chain(self.G.parameters(), self.F.parameters()),
                                                     lr=self.args.lr, betas=(self.args.beta1, 0.999))
         self.optimizer_discriminator = torch.optim.Adam(itertools.chain(self.Dx.parameters(), self.Dy.parameters()),
@@ -77,10 +81,6 @@ class CycleGAN(BaseModel):
         self.optimizers.append(self.optimizer_discriminator)
 
         # load/define networks
-        self.Dx = self.construct_discriminator(self.args.in_channel_num + self.args.out_channel_num, self.args.channel_base_num,
-                                               self.args.netD_type, self.args.netD_layer_num).cuda()
-        self.Dy = self.construct_discriminator(self.args.in_channel_num + self.args.out_channel_num, self.args.channel_base_num,
-                                               self.args.netD_type, self.args.netD_layer_num).cuda()
 
         self.fake_A_pool = ImagePool(self.args.pool_size)
         self.fake_B_pool = ImagePool(self.args.pool_size)
