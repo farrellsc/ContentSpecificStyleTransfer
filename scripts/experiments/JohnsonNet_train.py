@@ -69,11 +69,11 @@ if __name__ == '__main__':
         vgg_relu_levels = ("1",)
         Datasets = ("city",)
     else:
-        style_images = ("mosaic", "candy", "udnie", "rain-princess-cropped")
+        style_images = ("portrait", "night", "mountain", "mosaic", "candy", "udnie", "rain-princess-cropped")
         content_weights = ("1e5",)
         style_weights = ("1e10",)
-        vgg_relu_levels = ("0", "1", "2", "3")
-        Datasets = ("city", "mountain")
+        vgg_relu_levels = ("2",)
+        Datasets = ("city1000", "mountain1000", "palace1000", "portrait1000")
     for style_image in style_images:
         for content_weight in content_weights:
             for style_weight in style_weights:
