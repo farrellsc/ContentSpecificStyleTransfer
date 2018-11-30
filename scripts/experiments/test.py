@@ -26,11 +26,8 @@ def classify(args):
 
 
 if __name__ == '__main__':
-    groups = ("portrait",)
-    models = ("Thu_Nov_15_21:00:09_2018_portrait_1e5_1e10_0_portrait",
-              "Thu_Nov_15_21:29:48_2018_portrait_1e5_1e10_1_portrait",
-              "Thu_Nov_15_21:59:23_2018_portrait_1e5_1e10_2_portrait",
-              "Thu_Nov_15_22:28:57_2018_portrait_1e5_1e10_3_portrait")
+    groups = ("city", "mountain", "palace", "portrait")
+    models = os.listdir('../../models/JohnsonNet')
 
     for group in groups:
         for model in models:
@@ -42,7 +39,7 @@ if __name__ == '__main__':
                 args = {
                     "content_image": contentdir + image,
                     "content_scale": None,
-                    "model": "../../models/JohnsonNet/" + model + ".model",
+                    "model": "../../models/JohnsonNet/" + model,
                     "output_image": outputdir + image
                 }
                 with torch.cuda.device(0):
