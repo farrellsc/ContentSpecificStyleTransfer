@@ -5,6 +5,8 @@ from ..Utils import Utils as utils
 from overrides import overrides
 from torch.optim import Adam
 from torchvision import transforms
+from SuperStyleTransfer.Network.ResnetGenerator import ResnetGenerator
+from SuperStyleTransfer.Network.UnetGenerator import UnetGenerator
 from SuperStyleTransfer.Utils.DotDict import DotDict
 import torch
 
@@ -16,7 +18,17 @@ class JohnsonNet(BaseModel):
         self.args = args
         self.args.n_batch = 0
 
-        self.TransformerNet = ResNet().cuda()
+        self.TransformerNet = None
+        if args.get("transformerNet") is None or args.transformerNet == "resnet":
+            self.TransformerNet = ResNet().cuda()
+        elif args.transformerNet == 'resnet_9blocks':
+            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, args.channel_base_num, n_blocks=9).cuda()
+        elif args.transformerNet == 'resnet_6blocks':
+            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, args.channel_base_num, n_blocks=6).cuda()
+        elif args.transformerNet == 'unet_128':
+            self.TransformerNet = UnetGenerator(args.in_channel_num, args.out_channel_num, 7, args.channel_base_num).cuda()
+        elif args.transformerNet == 'unet_256':
+            self.TransformerNet = UnetGenerator(args.in_channel_num, args.out_channel_num, 8, args.channel_base_num).cuda()
 
         self.x = None
         self.y = None
