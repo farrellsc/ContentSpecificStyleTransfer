@@ -27,7 +27,7 @@ def classify(args):
 
 if __name__ == '__main__':
     groups = ("city", "mountain", "palace", "portrait")
-    models = os.listdir('../../test_models')
+    models = os.listdir('../../models/JohnsonNet')
 
     for group in groups:
         for model in models:
@@ -39,7 +39,7 @@ if __name__ == '__main__':
                 args = {
                     "content_image": contentdir + image,
                     "content_scale": None,
-                    "model": "../../models/JohnsonNet/" + model + ".model",
+                    "model": "../../models/JohnsonNet/" + model,
                     "output_image": outputdir + image
                 }
                 with torch.cuda.device(0):
