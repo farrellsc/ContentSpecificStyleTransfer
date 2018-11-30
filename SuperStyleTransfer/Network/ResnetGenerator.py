@@ -32,7 +32,7 @@ class ResnetGenerator(nn.Module):
             # We set norm_layer and use_bias as two default values. This is different from the ResBlock in the
             # original implementation
             # Note that use_bias can only be True if
-            model += [ResBlock(channel_base_num * mult, padding_type=padding_type, use_dropout=True, norm_layer=nn.BatchNorm2d, use_bias=False)]
+            model += [ResBlock(channel_base_num * mult)]
 
         for i in range(n_downsampling):
             mult = 2**(n_downsampling - i)
