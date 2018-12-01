@@ -66,8 +66,8 @@ class JohnsonNet(BaseModel):
         self.style_loss = 0.
         for ft_y, gm_s in zip(self.features_y, self.gram_style):
             gm_y = utils.calc_gram_matrix(ft_y)
-            self.style_loss += self.lossFunc(gm_y, gm_s[:self.args.n_batch, :, :])
-        self.style_loss *= self.args.style_weight
+            self.style_loss = self.style_loss + self.lossFunc(gm_y, gm_s[:self.args.n_batch, :, :])
+        self.style_loss = self.style_loss * self.args.style_weight
 
         self.total_loss = self.content_loss + self.style_loss
         self.total_loss.backward()
