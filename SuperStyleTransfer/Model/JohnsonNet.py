@@ -19,12 +19,8 @@ class JohnsonNet(BaseModel):
         self.args.n_batch = 0
 
         self.TransformerNet = None
-        if args.get("transformerNet") is None or args.transformerNet == "resnet":
-            self.TransformerNet = ResNet().cuda()
-        elif args.transformerNet == 'resnet_9blocks':
-            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, args.channel_base_num, n_blocks=9).cuda()
-        elif args.transformerNet == 'resnet_6blocks':
-            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, args.channel_base_num, n_blocks=6).cuda()
+        if args.transformerNet == 'resnet':
+            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, args.channel_base_num, n_blocks=args.blocknum).cuda()
         elif args.transformerNet == 'unet_128':
             self.TransformerNet = UnetGenerator(args.in_channel_num, args.out_channel_num, 7, args.channel_base_num).cuda()
         elif args.transformerNet == 'unet_256':
