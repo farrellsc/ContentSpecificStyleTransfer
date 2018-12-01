@@ -41,7 +41,9 @@ class UnetSkipConnectionBlock(nn.Module):
             in_channel_num = outer_nc
         downconv = nn.Conv2d(in_channel_num, inner_nc, kernel_size=4,
                              stride=2, padding=1, bias=use_bias)
+        downrelu = nn.LeakyReLU(0.2, False)
         downnorm = norm_layer(inner_nc)
+        uprelu = nn.ReLU(False)
         upnorm = norm_layer(outer_nc)
 
         if outermost:
@@ -49,21 +51,21 @@ class UnetSkipConnectionBlock(nn.Module):
                                         kernel_size=4, stride=2,
                                         padding=1)
             down = [downconv]
-            up = [upconv, nn.Tanh()]
+            up = [uprelu, upconv, nn.Tanh()]
             model = down + [submodule] + up
         elif innermost:
             upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
                                         kernel_size=4, stride=2,
                                         padding=1, bias=use_bias)
-            down = [downconv]
-            up = [upconv, upnorm]
+            down = [downrelu, downconv]
+            up = [uprelu, upconv, upnorm]
             model = down + up
         else:
             upconv = nn.ConvTranspose2d(inner_nc * 2, outer_nc,
                                         kernel_size=4, stride=2,
                                         padding=1, bias=use_bias)
-            down = [downconv, downnorm]
-            up = [upconv, upnorm]
+            down = [downrelu, downconv, downnorm]
+            up = [uprelu, upconv, upnorm]
 
             model = down + [submodule] + up + [nn.Dropout(0.5)]
 
