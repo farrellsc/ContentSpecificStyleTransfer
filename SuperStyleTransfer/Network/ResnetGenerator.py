@@ -12,56 +12,39 @@ class ResnetGenerator(nn.Module):
         :param padding_type:
         """
         assert(n_blocks >= 0)
-        self.n_blocks = n_blocks
         super(ResnetGenerator, self).__init__()
         self.in_channel_num = in_channel_num
         self.out_channel_num = out_channel_num
         self.channel_base_num = channel_base_num
 
-        self.model_head = [nn.ReflectionPad2d(3),
+        model = [nn.ReflectionPad2d(3),
                  nn.Conv2d(in_channel_num, channel_base_num, kernel_size=7, padding=0),
                  nn.ReLU()]
 
         n_downsampling = 2
-        self.n_downsampling = n_downsampling
-        self.model_downsampling = []
         for i in range(n_downsampling):
             mult = 2**i
-            self.model_downsampling.append(nn.Conv2d(channel_base_num * mult, channel_base_num * mult * 2, kernel_size=3, stride=2, padding=1))
-            self.model_downsampling.append(nn.ReLU())
+            model += [nn.Conv2d(channel_base_num * mult, channel_base_num * mult * 2, kernel_size=3, stride=2, padding=1),
+                      nn.ReLU()]
 
         mult = 2**n_downsampling
-        self.model_nblocks = []
         for i in range(n_blocks):
             # We set norm_layer and use_bias as two default values. This is different from the ResBlock in the
             # original implementation
             # Note that use_bias can only be True if
-            self.model_nblocks.append(ResBlock(channel_base_num * mult))
+            model += [ResBlock(channel_base_num * mult)]
 
-        self.model_upsampling = []
         for i in range(n_downsampling):
             mult = 2**(n_downsampling - i)
-            self.model_upsampling.append(nn.ConvTranspose2d(channel_base_num * mult, int(channel_base_num * mult / 2),
+            model += [nn.ConvTranspose2d(channel_base_num * mult, int(channel_base_num * mult / 2),
                                          kernel_size=3, stride=2,
-                                         padding=1, output_padding=1))
-            self.model_upsampling.append(nn.ReLU())
+                                         padding=1, output_padding=1),
+                      nn.ReLU()]
+        model += [nn.ReflectionPad2d(3)]
+        model += [nn.Conv2d(channel_base_num, out_channel_num, kernel_size=7, padding=0)]
+        model += [nn.Tanh()]
 
-        self.model_tail = [
-            nn.ReflectionPad2d(3),
-            nn.Conv2d(channel_base_num, out_channel_num, kernel_size=7, padding=0),
-            nn.Tanh()]
+        self.model = nn.Sequential(*model)
 
     def forward(self, x):
-        y = self.model_head[0](x)
-        y = self.model_head[1](y)
-        y = self.model_head[2](y)
-        for i in range(self.n_downsampling):
-            y = self.model_downsampling[i](y)
-        for i in range(self.n_blocks):
-            y = self.model_nblocks[i](y)
-        for i in range(self.n_downsampling):
-            y = self.model_upsampling[i](y)
-        y = self.model_tail[0](y)
-        y = self.model_tail[1](y)
-        y = self.model_tail[2](y)
-        return y
+        return self.model(x)
