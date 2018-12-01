@@ -19,13 +19,13 @@ class ResnetGenerator(nn.Module):
 
         model = [nn.ReflectionPad2d(3),
                  nn.Conv2d(in_channel_num, channel_base_num, kernel_size=7, padding=0),
-                 nn.ReLU(True)]
+                 nn.ReLU(False)]
 
         n_downsampling = 2
         for i in range(n_downsampling):
             mult = 2**i
             model += [nn.Conv2d(channel_base_num * mult, channel_base_num * mult * 2, kernel_size=3, stride=2, padding=1),
-                      nn.ReLU(True)]
+                      nn.ReLU(False)]
 
         mult = 2**n_downsampling
         for i in range(n_blocks):
@@ -39,7 +39,7 @@ class ResnetGenerator(nn.Module):
             model += [nn.ConvTranspose2d(channel_base_num * mult, int(channel_base_num * mult / 2),
                                          kernel_size=3, stride=2,
                                          padding=1, output_padding=1),
-                      nn.ReLU(True)]
+                      nn.ReLU(False)]
         model += [nn.ReflectionPad2d(3)]
         model += [nn.Conv2d(channel_base_num, out_channel_num, kernel_size=7, padding=0)]
         model += [nn.Tanh()]
