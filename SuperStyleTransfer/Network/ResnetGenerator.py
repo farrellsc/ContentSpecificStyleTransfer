@@ -3,48 +3,48 @@ from SuperStyleTransfer.NetComponents.ResBlock import ResBlock
 
 
 class ResnetGenerator(nn.Module):
-    def __init__(self, in_channel_num, out_channel_num, channel_base_num=64, n_blocks=6, padding_type='reflect'):
-        """
-        :param in_channel_num: input number of channels
-        :param out_channel_num: output number of channels
-        :param channel_base_num:
-        :param n_blocks:
-        :param padding_type:
-        """
+    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, padding_type='reflect'):
         assert(n_blocks >= 0)
         super(ResnetGenerator, self).__init__()
-        self.in_channel_num = in_channel_num
-        self.out_channel_num = out_channel_num
-        self.channel_base_num = channel_base_num
+        self.input_nc = input_nc
+        self.output_nc = output_nc
+        self.ngf = ngf
+        if type(norm_layer) == functools.partial:
+            use_bias = norm_layer.func == nn.InstanceNorm2d
+        else:
+            use_bias = norm_layer == nn.InstanceNorm2d
 
         model = [nn.ReflectionPad2d(3),
-                 nn.Conv2d(in_channel_num, channel_base_num, kernel_size=7, padding=0),
+                 nn.Conv2d(input_nc, ngf, kernel_size=7, padding=0,
+                           bias=use_bias),
+                 norm_layer(ngf),
                  nn.ReLU(False)]
 
         n_downsampling = 2
         for i in range(n_downsampling):
             mult = 2**i
-            model += [nn.Conv2d(channel_base_num * mult, channel_base_num * mult * 2, kernel_size=3, stride=2, padding=1),
+            model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
+                                stride=2, padding=1, bias=use_bias),
+                      norm_layer(ngf * mult * 2),
                       nn.ReLU(False)]
 
         mult = 2**n_downsampling
         for i in range(n_blocks):
-            # We set norm_layer and use_bias as two default values. This is different from the ResBlock in the
-            # original implementation
-            # Note that use_bias can only be True if
-            model += [ResBlock(channel_base_num * mult)]
+            model += [ResBlock(ngf * mult, padding_type=padding_type, norm_layer=norm_layer, use_dropout=use_dropout, use_bias=use_bias)]
 
         for i in range(n_downsampling):
             mult = 2**(n_downsampling - i)
-            model += [nn.ConvTranspose2d(channel_base_num * mult, int(channel_base_num * mult / 2),
+            model += [nn.ConvTranspose2d(ngf * mult, int(ngf * mult / 2),
                                          kernel_size=3, stride=2,
-                                         padding=1, output_padding=1),
+                                         padding=1, output_padding=1,
+                                         bias=use_bias),
+                      norm_layer(int(ngf * mult / 2)),
                       nn.ReLU(False)]
         model += [nn.ReflectionPad2d(3)]
-        model += [nn.Conv2d(channel_base_num, out_channel_num, kernel_size=7, padding=0)]
-        # model += [nn.Tanh(False)]
+        model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
+        # model += [nn.Tanh()]
 
         self.model = nn.Sequential(*model)
 
-    def forward(self, x):
-        return self.model(x)
+    def forward(self, input):
+        return self.model(input)

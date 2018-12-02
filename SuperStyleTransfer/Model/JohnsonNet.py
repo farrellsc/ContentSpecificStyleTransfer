@@ -20,7 +20,8 @@ class JohnsonNet(BaseModel):
 
         self.TransformerNet = None
         if args.transformerNet == 'resnet':
-            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, args.channel_base_num, n_blocks=args.blocknum).cuda()
+            self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, ngf=args.channel_base_num,
+                                                  use_dropout=True, n_blocks=args.blocknum).cuda()
         elif args.transformerNet == 'unet_128':
             self.TransformerNet = UnetGenerator(args.in_channel_num, args.out_channel_num, 7, args.channel_base_num).cuda()
         elif args.transformerNet == 'unet_256':
