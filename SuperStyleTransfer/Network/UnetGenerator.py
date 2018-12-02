@@ -41,9 +41,9 @@ class UnetSkipConnectionBlock(nn.Module):
             in_channel_num = outer_nc
         downconv = nn.Conv2d(in_channel_num, inner_nc, kernel_size=4,
                              stride=2, padding=1, bias=use_bias)
-        downrelu = nn.LeakyReLU(0.2, False)
+        downrelu = nn.LeakyReLU(0.2, True)
         downnorm = norm_layer(inner_nc)
-        uprelu = nn.ReLU(False)
+        uprelu = nn.ReLU(True)
         upnorm = norm_layer(outer_nc)
 
         if outermost:
