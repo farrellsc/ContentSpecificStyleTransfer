@@ -3,7 +3,7 @@ import torch
 from .ConvLayer import ConvLayer
 
 
-class ResnetBlock(nn.Module):
+class ResBlock(nn.Module):
     def __init__(self, dim, padding_type, norm_layer, use_dropout, use_bias):
         super(ResnetBlock, self).__init__()
         self.conv_block = self.build_conv_block(dim, padding_type, norm_layer, use_dropout, use_bias)

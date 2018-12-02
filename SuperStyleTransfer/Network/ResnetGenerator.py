@@ -1,5 +1,6 @@
 import torch.nn as nn
 from SuperStyleTransfer.NetComponents.ResBlock import ResBlock
+import functools
 
 
 class ResnetGenerator(nn.Module):
