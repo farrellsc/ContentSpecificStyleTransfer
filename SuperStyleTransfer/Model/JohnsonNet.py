@@ -19,7 +19,9 @@ class JohnsonNet(BaseModel):
         self.args.n_batch = 0
 
         self.TransformerNet = None
-        if args.transformerNet == 'resnet':
+        if args.get('transformerNet') is None: 
+            self.TransformerNet = ResNet()
+        elif args.transformerNet == 'resnet':
             self.TransformerNet = ResnetGenerator(args.in_channel_num, args.out_channel_num, ngf=args.channel_base_num,
                                                   use_dropout=True, n_blocks=args.blocknum).cuda()
         elif args.transformerNet == 'unet_128':
