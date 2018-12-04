@@ -53,7 +53,7 @@ def train(args):
                 JohnsonModel.save_model(ckpt_model_path)
 
     # save model
-    save_model_filename = str(time.ctime()).replace(' ', '_') + "_" + style_image + "_" + content_weight + "_" + style_weight + "_" + vgg_relu_level + "_" + dataset + "_" + str(args.blocknum) + ".model"
+    save_model_filename = str(time.ctime()).replace(' ', '_') + "_" + style_image + "_" + content_weight + "_" + style_weight + "_" + vgg_relu_level + "_" + dataset + ".model"
     save_model_path = os.path.join(args.save_model_dir, save_model_filename)
     JohnsonModel.save_model(save_model_path)
 
@@ -61,27 +61,33 @@ def train(args):
 
 
 if __name__ == '__main__':
-    style_images = ("mosaic",)
-    content_weights = ("1e5",)
-    style_weights = ("1e10",)
-    vgg_relu_levels = ("1",)
-    dataset = "palace1000"
-    blocknum = (3,6,9)
+    default = True
+    if default:
+        style_images = ("monet_mountain",)
+        content_weights = ("1e5",)
+        style_weights = ("1e10",)
+        vgg_relu_levels = ("1", "2")
+        Datasets = ("mountain800",)
+    else:
+        style_images = ("portrait",)
+        content_weights = ("1e5",)
+        style_weights = ("1e10",)
+        vgg_relu_levels = ("0", "1", "2")
+        Datasets = ("portrait",)
     for style_image in style_images:
         for content_weight in content_weights:
             for style_weight in style_weights:
                 for vgg_relu_level in vgg_relu_levels:
-                    for bnum in blocknum:
+                    for dataset in Datasets:
                         args = {
                             "seed": 42,
-                            "transformerNet": "resnet",
-                            "blocknum": bnum, 
                             "image_size": 256,
                             "batch_size": 16,
                             "lr": 1e-3,
                             "style_image": "../../data/images/style-images/" + style_image + ".jpg",
                             "style_size": None,
                             "epochs": 20,
+                            "blocknum": 6,
                             "content_weight": float(content_weight),
                             "style_weight": float(style_weight),
                             "vgg_relu_level": int(vgg_relu_level),   # 0/1/2/3

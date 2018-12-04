@@ -11,14 +11,16 @@ import os
 def classify(args):
     content_image = utils.load_image(args.content_image, scale=args.content_scale)
     content_transform = transforms.Compose([
+        transforms.Resize(args.img_size),
+        transforms.CenterCrop(args.img_size),
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255))
     ])
     content_image = content_transform(content_image)
     content_image = content_image.unsqueeze(0).cuda()
-
+    
     with torch.no_grad():
-        style_model = JohnsonNet(args)
+        style_model = JohnsonNet()
         style_model.load_model(args.model)
         style_model.set_input(content_image)
         output = style_model.test()
@@ -26,22 +28,23 @@ def classify(args):
 
 
 if __name__ == '__main__':
-    groups = ("raw",)
-    models = (
-#        "Mon_Dec__3_00:20:41_2018_mosaic_1e5_1e10_1_palace1000_3",
-#        "Mon_Dec__3_00:33:44_2018_mosaic_1e5_1e10_1_palace1000_6",
-        "Mon_Dec__3_00:49:19_2018_mosaic_1e5_1e10_1_palace1000_9",
-    )
-
+    groups = ("tmp",)
+    models = ("Thu_Nov_15_16:54:14_2018_night_1e5_1e10_0_city",
+              "Thu_Nov_15_17:23:52_2018_night_1e5_1e10_1_city",
+              "Thu_Nov_15_17:53:27_2018_night_1e5_1e10_2_city",
+              "Thu_Nov_15_18:23:01_2018_night_1e5_1e10_3_city"
+             )
+                 
     for group in groups:
         for model in models:
             outputdir = "../../output/JohnsonNet/" + group + "/" + model + "/"
             contentdir = "../../data/trainingData/" + group + "/" + group + "/"
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
-            for image in os.listdir(contentdir)[:500]:
+            for ind, image in enumerate(os.listdir(contentdir)[-600:]):
+                print(ind)
                 args = {
-                    "blocknum": 9,
+                    "img_size": 256,
                     "content_image": contentdir + image,
                     "content_scale": None,
                     "model": "../../models/JohnsonNet/" + model + ".model",

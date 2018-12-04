@@ -26,11 +26,11 @@ def classify(args):
 
 
 if __name__ == '__main__':
-    groups = ("raw",)
+    groups = ("alldata_test",)
     models = (
 #        "Mon_Dec__3_00:20:41_2018_mosaic_1e5_1e10_1_palace1000_3",
 #        "Mon_Dec__3_00:33:44_2018_mosaic_1e5_1e10_1_palace1000_6",
-        "Mon_Dec__3_00:49:19_2018_mosaic_1e5_1e10_1_palace1000_9",
+        "Mon_Dec__3_13:50:17_2018_candy_1e5_1e10_1_alldata",
     )
 
     for group in groups:
@@ -41,10 +41,10 @@ if __name__ == '__main__':
                 os.makedirs(outputdir)
             for image in os.listdir(contentdir)[:500]:
                 args = {
-                    "blocknum": 9,
+                    "blocknum": 6,
                     "content_image": contentdir + image,
                     "content_scale": None,
-                    "model": "../../models/JohnsonNet/" + model + ".model",
+                    "model": "../../models/test/" + model + ".model",
                     "output_image": outputdir + image
                 }
                 with torch.cuda.device(0):

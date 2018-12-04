@@ -26,11 +26,9 @@ def classify(args):
 
 
 if __name__ == '__main__':
-    groups = ("raw",)
+    groups = ("mountain800",)
     models = (
-#        "Mon_Dec__3_00:20:41_2018_mosaic_1e5_1e10_1_palace1000_3",
-#        "Mon_Dec__3_00:33:44_2018_mosaic_1e5_1e10_1_palace1000_6",
-        "Mon_Dec__3_00:49:19_2018_mosaic_1e5_1e10_1_palace1000_9",
+        "epoch_10_Sun_Nov_11_22:38:42_2018_100000.0_10000000000.0",
     )
 
     for group in groups:
@@ -39,9 +37,9 @@ if __name__ == '__main__':
             contentdir = "../../data/trainingData/" + group + "/" + group + "/"
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
-            for image in os.listdir(contentdir)[:500]:
+            for image in os.listdir(contentdir):
                 args = {
-                    "blocknum": 9,
+                    "blocknum": 6,
                     "content_image": contentdir + image,
                     "content_scale": None,
                     "model": "../../models/JohnsonNet/" + model + ".model",

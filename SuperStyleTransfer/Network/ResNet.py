@@ -1,5 +1,6 @@
 from .NetworkBase import NetworkBase
 import torch
+import torch.nn as nn
 from ..NetComponents.ConvLayer import ConvLayer
 from ..NetComponents.ResBlock import ResBlock
 from ..NetComponents.UpSamplingLayer import UpSamplingLayer
@@ -16,11 +17,11 @@ class ResNet(NetworkBase):
         self.conv3 = ConvLayer(64, 128, kernel_size=3, stride=2)
         self.in3 = torch.nn.InstanceNorm2d(128, affine=True)
         # Residual layers
-        self.res1 = ResBlock(128)
-        self.res2 = ResBlock(128)
-        self.res3 = ResBlock(128)
-        self.res4 = ResBlock(128)
-        self.res5 = ResBlock(128)
+        self.res1 = ResBlock(128, padding_type='reflect', norm_layer=nn.BatchNorm2d, use_dropout=False, use_bias=False)
+        self.res2 = ResBlock(128, padding_type='reflect', norm_layer=nn.BatchNorm2d, use_dropout=False, use_bias=False)
+        self.res3 = ResBlock(128, padding_type='reflect', norm_layer=nn.BatchNorm2d, use_dropout=False, use_bias=False)
+        self.res4 = ResBlock(128, padding_type='reflect', norm_layer=nn.BatchNorm2d, use_dropout=False, use_bias=False)
+        self.res5 = ResBlock(128, padding_type='reflect', norm_layer=nn.BatchNorm2d, use_dropout=False, use_bias=False)
         # Upsampling Layers
         self.deconv1 = UpSamplingLayer(128, 64, kernel_size=3, stride=1, upsample=2)
         self.in4 = torch.nn.InstanceNorm2d(64, affine=True)
