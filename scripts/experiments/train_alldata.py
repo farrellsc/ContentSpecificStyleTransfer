@@ -61,19 +61,11 @@ def train(args):
 
 
 if __name__ == '__main__':
-    default = False
-    if default:
-        style_images = ("mosaic",)
-        content_weights = ("1e5",)
-        style_weights = ("1e10",)
-        vgg_relu_levels = ("1",)
-        Datasets = ("city",)
-    else:
-        style_images = ("rain-princess-cropped",)
-        content_weights = ("1e5",)
-        style_weights = ("1e12", "1e14", "1e16", "1e18", "1e20")
-        vgg_relu_levels = ("2",)
-        Datasets = ("mountain1000", "city1000", "palace1000", "portrait1000")
+    style_images = ("mosaic",)
+    content_weights = ("1e5",)
+    style_weights = ("1e10",)
+    vgg_relu_levels = ("1",)
+    Datasets = ("palace")
     for style_image in style_images:
         for content_weight in content_weights:
             for style_weight in style_weights:
@@ -86,7 +78,7 @@ if __name__ == '__main__':
                             "lr": 1e-3,
                             "style_image": "../../data/images/style-images/" + style_image + ".jpg",
                             "style_size": None,
-                            "epochs": 10,
+                            "epochs": 20,
                             "content_weight": float(content_weight),
                             "style_weight": float(style_weight),
                             "vgg_relu_level": int(vgg_relu_level),   # 0/1/2/3
